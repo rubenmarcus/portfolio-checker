@@ -1,103 +1,160 @@
-import Image from "next/image";
+'use client';
+
+import { useState, useEffect } from 'react';
+import { ChainSelector, chains } from '@/components/ChainSelector';
+import { AddressInput } from '@/components/AddressInput';
+import { PortfolioTable } from '@/components/PortfolioTable';
+import { truncateAddress } from '@/lib/utils';
+
+// Define token type
+interface Token {
+  token: {
+    address: string;
+    symbol: string;
+    name: string;
+    decimals: number;
+    logoURI?: string;
+    chainId: number;
+    price?: {
+      USD: number;
+    };
+  };
+  balance: string;
+  formattedBalance: string;
+  usdValue: number;
+}
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [address, setAddress] = useState('');
+  const [selectedChain, setSelectedChain] = useState('ethereum');
+  const [allTokens, setAllTokens] = useState<Token[]>([]);
+  const [displayedTokens, setDisplayedTokens] = useState<Token[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [pagination, setPagination] = useState({
+    total: 0,
+    page: 1,
+    limit: 10,
+    pages: 0
+  });
+  const [totals, setTotals] = useState({
+    usdValue: 0,
+    tokenCount: 0
+  });
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+  const fetchBalances = async () => {
+    if (!address) return;
+
+    setIsLoading(true);
+    setError('');
+
+    try {
+      const chain = chains.find(c => c.id === selectedChain);
+      // Fetch all data at once with a large limit
+      const response = await fetch(`/api/balance?address=${address}&chain=${chain?.ankrName || 'eth'}`);
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to fetch balances');
+      }
+
+      const responseData = await response.json();
+
+      // Store all tokens in state
+      setAllTokens(responseData.data || []);
+
+      // Set initial displayed tokens based on current pagination
+      updateDisplayedTokens(responseData.data || [], pagination.page, pagination.limit);
+
+      if (responseData.totals) {
+        setTotals(responseData.totals);
+      }
+    } catch (error: unknown) {
+      console.error('Error fetching balances:', error);
+      setError(error instanceof Error ? error.message : 'An error occurred while fetching balances');
+      setAllTokens([]);
+      setDisplayedTokens([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Update displayed tokens based on pagination
+  const updateDisplayedTokens = (tokens: Token[], page: number, limit: number) => {
+    const startIndex = (page - 1) * limit;
+    const paginatedTokens = tokens.slice(startIndex, startIndex + limit);
+    setDisplayedTokens(paginatedTokens);
+
+    setPagination({
+      total: tokens.length,
+      page: page,
+      limit: limit,
+      pages: Math.ceil(tokens.length / limit)
+    });
+  };
+
+  useEffect(() => {
+    if (address && (address.startsWith('0x') && address.length === 42) || address.endsWith('.eth')) {
+      const timeoutId = setTimeout(() => {
+        fetchBalances(); // Fetch all tokens when address or chain changes
+      }, 500); // Debounce
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [address, selectedChain]);
+
+  const handlePageChange = (page: number) => {
+    // Update pagination client-side
+    updateDisplayedTokens(allTokens, page, pagination.limit);
+  };
+
+  const handleLimitChange = (limit: number) => {
+    // Update pagination client-side
+    updateDisplayedTokens(allTokens, 1, limit); // Reset to page 1 when limit changes
+  };
+
+  return (
+    <main className="flex min-h-screen flex-col items-center p-4 sm:p-8">
+      <div className="max-w-3xl w-full">
+        <div className="flex flex-col space-y-4 sm:space-y-0 sm:flex-row sm:justify-between sm:items-center mb-8">
+          <h1 className="text-3xl font-bold">OneBalance</h1>
+          <div className="flex items-center space-x-2">
+            <ChainSelector
+              selectedChain={selectedChain}
+              onSelectChain={setSelectedChain}
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+
+        <div className="mb-8">
+          <AddressInput
+            address={address}
+            onChange={setAddress}
+            isLoading={isLoading}
+            className="w-full"
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+          {error && (
+            <p className="text-red-500 mt-2 text-sm">{error}</p>
+          )}
+        </div>
+
+        <PortfolioTable
+          tokens={displayedTokens}
+          isLoading={isLoading}
+          address={address}
+          pagination={pagination}
+          onPageChange={handlePageChange}
+          onLimitChange={handleLimitChange}
+          totalUsdValue={totals.usdValue}
+          totalTokenCount={totals.tokenCount}
+        />
+
+        {address && !isLoading && displayedTokens.length > 0 && (
+          <div className="mt-4 text-sm text-muted-foreground text-right">
+            Viewing balances for {truncateAddress(address)}
+          </div>
+        )}
+      </div>
+    </main>
   );
 }
