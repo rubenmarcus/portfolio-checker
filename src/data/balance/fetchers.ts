@@ -103,8 +103,6 @@ function getChainId(blockchain: string): number {
     base: CHAIN_IDS.BASE,
     polygon: CHAIN_IDS.POLYGON,
     avalanche: CHAIN_IDS.AVALANCHE,
-    linea: CHAIN_IDS.LINEA,
-    gnosis: CHAIN_IDS.GNOSIS,
   };
   return chainIds[blockchain] || CHAIN_IDS.ETHEREUM;
 }
