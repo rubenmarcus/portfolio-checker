@@ -1,5 +1,5 @@
 // API keys and endpoints
-export const ANKR_API_KEY = '373b465fafdea58fc9750ecbca2ae69c95d79ab90d35c4d36782f15c77186628';
+export const ANKR_API_KEY = process.env.ANKR_API_KEY;
 export const ANKR_API_ENDPOINT = `https://rpc.ankr.com/multichain/${ANKR_API_KEY}`;
 
 // Chain IDs for reference

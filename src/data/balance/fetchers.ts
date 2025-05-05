@@ -7,22 +7,6 @@ import {
   SUPPORTED_EVM_CHAINS
 } from './providers';
 
-// Types for balance responses
-export interface TokenBalance {
-  symbol: string;
-  balance: string;
-  balanceUsd?: string;
-  balanceRaw?: string;
-  decimals?: number;
-  name: string;
-  thumbnail?: string;
-  tokenAddress?: string;
-}
-
-export interface BalanceResponse {
-  tokens: TokenBalance[];
-  totalBalanceUsd: string;
-}
 
 // Check if address is a valid EVM address
 function isValidEvmAddress(address: string): boolean {
@@ -41,7 +25,7 @@ export async function fetchMultiChainBalances(address: string, chain: string = '
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': ANKR_API_KEY,
+        ...(ANKR_API_KEY ? { 'x-api-key': ANKR_API_KEY } : {}),
       },
       body: JSON.stringify({
         jsonrpc: '2.0',
