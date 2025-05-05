@@ -136,7 +136,7 @@ export const ChainClient: React.FC<ChainClientProps> = ({ chainId }) => {
 
   return (
     <div className="relative z-10 flex flex-col items-center p-4 sm:p-8 w-full h-full">
-      <div className="w-full max-w-4xl mx-auto">
+      <div className="w-full container mx-auto">
         <Portfolio
           address={address}
           chainId={selectedChain}

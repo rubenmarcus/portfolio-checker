@@ -125,11 +125,19 @@ export function PortfolioTable({
         <div className="grid grid-cols-2 gap-4">
           <div>
             <h3 className="text-sm text-muted-foreground font-medium">Total Balance</h3>
-            <p className="text-3xl font-bold">${totalUsdValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+            {isLoading || totalUsdValue === 0 ? (
+              <Skeleton className="h-9 w-32 mt-1" />
+            ) : (
+              <p className="text-3xl font-bold">${totalUsdValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+            )}
           </div>
           <div className="text-right">
             <h3 className="text-sm text-muted-foreground font-medium">Total Tokens</h3>
-            <p className="text-3xl font-bold">{displayedTokenCount}</p>
+            {isLoading || displayedTokenCount === 0 ? (
+              <Skeleton className="h-9 w-16 mt-1 ml-auto" />
+            ) : (
+              <p className="text-3xl font-bold">{displayedTokenCount}</p>
+            )}
           </div>
         </div>
       </div>
@@ -211,7 +219,15 @@ export function PortfolioTable({
       </div>
 
       {/* Pagination */}
-      {(pagination && onPageChange) ? (
+      {isLoading ? (
+        <div className="flex justify-center mt-4 space-x-2">
+          <Skeleton className="h-9 w-9 rounded-md" />
+          <Skeleton className="h-9 w-9 rounded-md" />
+          <Skeleton className="h-9 w-24 rounded-md" />
+          <Skeleton className="h-9 w-9 rounded-md" />
+          <Skeleton className="h-9 w-9 rounded-md" />
+        </div>
+      ) : (pagination && onPageChange) ? (
         <div className="flex justify-center mt-4">
           <Pagination
             total={pagination.total}
