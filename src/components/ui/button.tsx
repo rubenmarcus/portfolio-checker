@@ -10,15 +10,16 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          'bg-primary text-white shadow-md shadow-primary/20 hover:bg-primary/90 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]',
+          'bg-blue-800/80 backdrop-blur-sm text-white shadow-md shadow-blue-900/30 hover:bg-blue-700/90 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]',
         destructive:
           'bg-destructive text-white shadow-md shadow-destructive/20 hover:bg-destructive/90 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]',
         outline:
-          'border border-zinc-700 bg-zinc-800 text-zinc-100 shadow-md hover:bg-zinc-700 hover:text-white hover:border-zinc-600 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]',
+          'border border-blue-700/40 bg-blue-900/30 backdrop-blur-sm text-blue-100 shadow-md hover:bg-blue-700/40 hover:text-white hover:border-blue-600/60 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]',
         secondary:
           'bg-zinc-700 text-zinc-100 shadow-md hover:bg-zinc-600 hover:text-white hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]',
         ghost: 'hover:bg-zinc-700/50 hover:text-zinc-100 active:scale-[0.98]',
-        link: 'text-primary underline-offset-4 hover:underline hover:text-primary/90',
+        link: 'text-blue-500 underline-offset-4 hover:underline hover:text-blue-400',
+        blue: 'bg-blue-800/80 backdrop-blur-sm text-white shadow-md shadow-blue-900/30 hover:bg-blue-700/90 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]',
       },
       size: {
         default: 'h-10 px-4 py-2.5',

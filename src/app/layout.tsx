@@ -19,7 +19,10 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <TooltipProvider>
-          {children}
+          <div className="animated-background"></div>
+          <div className="content">
+            {children}
+          </div>
         </TooltipProvider>
       </body>
     </html>

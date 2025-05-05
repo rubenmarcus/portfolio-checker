@@ -10,52 +10,19 @@ import {
 import { formatCryptoBalance, truncateAddress } from '@/lib/utils';
 import { Pagination } from '@/components/ui/pagination';
 import { Skeleton } from '@/components/ui/skeleton';
-
-import { ChevronDown, ArrowUpDown, ArrowDown, ArrowUp } from 'lucide-react';
-
-interface TokenInfo {
-  address: string;
-  symbol: string;
-  name: string;
-  decimals: number;
-  logoURI?: string;
-  chainId: number;
-  type?: string; // Added for filtering
-  lastUpdated?: string; // Added for the new column
-  price?: {
-    USD: number;
-  };
-}
-
-interface Token {
-  token: TokenInfo;
-  balance: string;
-  formattedBalance: string;
-  usdValue: number;
-  lastUpdated?: string; // Added for sorting/display
-}
-
-interface PaginationMetadata {
-  total: number;
-  page: number;
-  limit: number;
-  pages: number;
-}
+import { Token, WalletBalance, PaginationMetadata } from '@/types/types';
 
 interface PortfolioTableProps {
-  tokens: Token[];
+  tokens: WalletBalance[];
   isLoading: boolean;
   address: string;
-  pagination?: PaginationMetadata; // Now optional as we can handle pagination internally
-  onPageChange?: (page: number) => void; // Optional for backward compatibility
-  onLimitChange?: (limit: number) => void; // Optional for backward compatibility
-  totalUsdValue?: number; // Total USD value across all tokens
-  totalTokenCount?: number; // Total token count across all pages
-  defaultPageSize?: number; // New prop for default page size
+  pagination?: PaginationMetadata;
+  onPageChange?: (page: number) => void;
+  onLimitChange?: (limit: number) => void;
+  totalUsdValue?: number;
+  totalTokenCount?: number;
+  defaultPageSize?: number;
 }
-
-type SortField = 'name' | 'balance' | 'value' | 'lastUpdated';
-type SortDirection = 'asc' | 'desc';
 
 export function PortfolioTable({
   tokens,
@@ -68,27 +35,11 @@ export function PortfolioTable({
   totalTokenCount,
   defaultPageSize = 10
 }: PortfolioTableProps) {
-  // State for sorting and filtering
-  const [sortField, setSortField] = useState<SortField>('value');
-  const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
-  const [tokenTypeFilter, setTokenTypeFilter] = useState<string>('all');
-
   // Local pagination state (used if backend pagination is not provided)
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(defaultPageSize);
 
-  // Get token types for filter dropdown
-  const tokenTypes = useMemo(() => {
-    const types = new Set<string>();
-    tokens.forEach(token => {
-      if (token.token.type) {
-        types.add(token.token.type);
-      }
-    });
-    return Array.from(types);
-  }, [tokens]);
-
-  // Calculate total balance - use provided total if available, otherwise calculate from current page
+  // Calculate total balance - use provided total if available, otherwise calculate from tokens
   const totalUsdValue = useMemo(() => {
     if (providedTotalUsdValue !== undefined) {
       return providedTotalUsdValue;
@@ -96,81 +47,37 @@ export function PortfolioTable({
     return tokens.reduce((sum, token) => sum + (token.usdValue || 0), 0);
   }, [tokens, providedTotalUsdValue]);
 
-  // Get total token count - use provided count if available, otherwise use current page length
+  // Get total token count - use provided count if available, otherwise use tokens length
   const displayedTokenCount = useMemo(() => {
     return totalTokenCount !== undefined ? totalTokenCount : tokens.length;
   }, [tokens.length, totalTokenCount]);
 
-  // Apply filters and sorting
-  const filteredAndSortedTokens = useMemo(() => {
-    let result = [...tokens];
-
-    // Apply type filter
-    if (tokenTypeFilter !== 'all') {
-      result = result.filter(token => token.token.type === tokenTypeFilter);
-    }
-
-    // Apply sorting
-    result.sort((a, b) => {
-      let compareA, compareB;
-
-      switch (sortField) {
-        case 'name':
-          compareA = a.token.name || '';
-          compareB = b.token.name || '';
-          break;
-        case 'balance':
-          compareA = parseFloat(a.formattedBalance) || 0;
-          compareB = parseFloat(b.formattedBalance) || 0;
-          break;
-        case 'value':
-          compareA = a.usdValue || 0;
-          compareB = b.usdValue || 0;
-          break;
-        case 'lastUpdated':
-          compareA = a.lastUpdated ? new Date(a.lastUpdated).getTime() : 0;
-          compareB = b.lastUpdated ? new Date(b.lastUpdated).getTime() : 0;
-          break;
-        default:
-          return 0;
-      }
-
-      if (sortDirection === 'asc') {
-        return compareA > compareB ? 1 : -1;
-      } else {
-        return compareA < compareB ? 1 : -1;
-      }
-    });
-
-    return result;
-  }, [tokens, tokenTypeFilter, sortField, sortDirection]);
-
   // Local pagination logic - used if backend pagination is not provided
   const paginatedTokens = useMemo(() => {
-    // If backend pagination is being used, return all filtered/sorted tokens
+    // If backend pagination is being used, return all tokens
     if (pagination && onPageChange) {
-      return filteredAndSortedTokens;
+      return tokens;
     }
 
     // Otherwise, handle pagination locally
     const startIndex = (currentPage - 1) * pageSize;
-    return filteredAndSortedTokens.slice(startIndex, startIndex + pageSize);
-  }, [filteredAndSortedTokens, currentPage, pageSize, pagination, onPageChange]);
+    return tokens.slice(startIndex, startIndex + pageSize);
+  }, [tokens, currentPage, pageSize, pagination, onPageChange]);
 
   // Calculate total pages for local pagination
   const totalPages = useMemo(() => {
-    return Math.ceil(filteredAndSortedTokens.length / pageSize);
-  }, [filteredAndSortedTokens.length, pageSize]);
+    return Math.ceil(tokens.length / pageSize);
+  }, [tokens.length, pageSize]);
 
   // Local pagination metadata
   const localPagination = useMemo(() => {
     return {
-      total: filteredAndSortedTokens.length,
+      total: tokens.length,
       page: currentPage,
       limit: pageSize,
       pages: totalPages
     };
-  }, [filteredAndSortedTokens.length, currentPage, pageSize, totalPages]);
+  }, [tokens.length, currentPage, pageSize, totalPages]);
 
   // Handle page change - either call onPageChange (backend) or update local state
   const handlePageChange = (page: number) => {
@@ -191,24 +98,9 @@ export function PortfolioTable({
     }
   };
 
-  // Toggle sort direction or change sort field
-  const handleSort = (field: SortField) => {
-    if (field === sortField) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortField(field);
-      setSortDirection('desc');
-    }
-
-    // If using local pagination, reset to first page when sorting changes
-    if (!pagination || !onPageChange) {
-      setCurrentPage(1);
-    }
-  };
-
   if (!address) {
     return (
-      <div className="rounded-xl border w-full mt-4 backdrop-blur-lg bg-white/10 dark:bg-gray-800/20 shadow-xl">
+      <div className="rounded-xl border  border-gray-700/30 w-full mt-4 backdrop-blur-lg bg-white/10 dark:bg-gray-800/20 shadow-xl">
         <div className="p-8 text-center text-muted-foreground">
           Enter an address to view portfolio
         </div>
@@ -218,7 +110,7 @@ export function PortfolioTable({
 
   if (tokens.length === 0 && !isLoading) {
     return (
-      <div className="rounded-xl border w-full mt-4 backdrop-blur-lg bg-white/10 dark:bg-gray-800/20 shadow-xl">
+      <div className="rounded-xl border  border-gray-700/30 w-full mt-4 backdrop-blur-lg bg-white/10 dark:bg-gray-800/20 shadow-xl">
         <div className="p-8 text-center text-muted-foreground">
           No tokens found for {truncateAddress(address)}
         </div>
@@ -228,7 +120,7 @@ export function PortfolioTable({
 
   return (
     <div className="space-y-4">
-      {/* User Summary Section - Always visible */}
+      {/* User Summary Section */}
       <div className="rounded-md border border-gray-700/30 w-full p-6 backdrop-blur-lg bg-gray-800/20 shadow-xl">
         <div className="grid grid-cols-2 gap-4">
           <div>
@@ -238,51 +130,6 @@ export function PortfolioTable({
           <div className="text-right">
             <h3 className="text-sm text-muted-foreground font-medium">Total Tokens</h3>
             <p className="text-3xl font-bold">{displayedTokenCount}</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Filters & Sorting Controls - Always visible */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
-        <div className="relative rounded-lg border bg-white/10 dark:bg-gray-800/20 shadow-md backdrop-blur-md">
-          <select
-            value={tokenTypeFilter}
-            onChange={(e) => {
-              setTokenTypeFilter(e.target.value);
-              // Reset to first page when filter changes (for local pagination)
-              if (!pagination || !onPageChange) {
-                setCurrentPage(1);
-              }
-            }}
-            className="appearance-none bg-transparent py-2 pl-4 pr-10 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
-          >
-            <option value="all">All Token Types</option>
-            {tokenTypes.map(type => (
-              <option key={type} value={type}>{type}</option>
-            ))}
-          </select>
-          <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-        </div>
-
-        <div className="flex items-center space-x-2">
-          <span className="text-sm text-muted-foreground">Sort by:</span>
-          <div className="flex rounded-lg overflow-hidden border bg-white/10 dark:bg-gray-800/20 shadow-md backdrop-blur-md">
-            {(['name', 'balance', 'value', 'lastUpdated'] as SortField[]).map((field) => (
-              <button
-                key={field}
-                onClick={() => handleSort(field)}
-                className={`px-3 py-1.5 text-sm transition-all ${sortField === field
-                  ? 'bg-primary/20 text-primary font-medium'
-                  : 'hover:bg-white/10 dark:hover:bg-gray-700/30'}`}
-              >
-                <span className="capitalize">{field === 'lastUpdated' ? 'Date' : field}</span>
-                {sortField === field && (
-                  <span className="ml-1 inline-flex">
-                    {sortDirection === 'asc' ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />}
-                  </span>
-                )}
-              </button>
-            ))}
           </div>
         </div>
       </div>
@@ -300,8 +147,8 @@ export function PortfolioTable({
           </TableHeader>
           <TableBody>
             {isLoading ? (
-              // Skeleton loading rows for table content only
-              Array(10).fill(0).map((_, index) => (
+              // Dynamic skeleton loading based on token count or a reasonable default
+              Array(tokens.length || 5).fill(0).map((_, index) => (
                 <TableRow key={index} className={index % 2 === 0 ? "bg-gray-50/5 dark:bg-gray-800/30" : "bg-white/5 dark:bg-gray-900/20"}>
                   <TableCell className="flex items-center gap-2">
                     <Skeleton className="h-5 w-5 rounded-full" />
@@ -313,7 +160,7 @@ export function PortfolioTable({
                 </TableRow>
               ))
             ) : (
-              // Actual token data - using paginatedTokens instead of filteredAndSortedTokens
+              // Actual token data
               paginatedTokens.map((token, index) => (
                 <TableRow
                   key={token.token.address || index}
@@ -350,7 +197,7 @@ export function PortfolioTable({
                   <TableCell className="text-right">
                     {token.usdValue ? (
                       <span className="font-medium text-emerald-500 dark:text-emerald-400">
-                        ${token.usdValue.toFixed(2)}
+                        ${token.usdValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                       </span>
                     ) : (
                       <span className="text-muted-foreground">N/A</span>
@@ -363,8 +210,7 @@ export function PortfolioTable({
         </Table>
       </div>
 
-      {/* Pagination - Always visible when applicable */}
-      {/* Use either the provided pagination or local pagination */}
+      {/* Pagination */}
       {(pagination && onPageChange) ? (
         <div className="flex justify-center mt-4">
           <Pagination

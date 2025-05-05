@@ -6,43 +6,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { CHAIN_IDS, CHAIN_SLUGS, SUPPORTED_EVM_CHAINS } from '@/data/balance/fetchers';
 import Image from 'next/image';
-
-// Chain data with logos from public folder
-const chains = SUPPORTED_EVM_CHAINS.map(chainId => {
-  const ankrName = CHAIN_SLUGS[chainId as keyof typeof CHAIN_SLUGS] || '';
-
-  // Define chain data based on chainId
-  const getChainData = (id: number) => {
-    switch (id) {
-      case CHAIN_IDS.ETHEREUM:
-        return { id: 'ethereum', name: 'Ethereum', logoId: 'ethereum' };
-      case CHAIN_IDS.POLYGON:
-        return { id: 'polygon', name: 'Polygon', logoId: 'polygon' };
-      case CHAIN_IDS.BSC:
-        return { id: 'bsc', name: 'BNB Chain', logoId: 'bsc' };
-      case CHAIN_IDS.AVALANCHE:
-        return { id: 'avalanche', name: 'Avalanche', logoId: 'avalanche' };
-      case CHAIN_IDS.ARBITRUM:
-        return { id: 'arbitrum', name: 'Arbitrum', logoId: 'arbitrum' };
-      case CHAIN_IDS.OPTIMISM:
-        return { id: 'optimism', name: 'Optimism', logoId: 'optimism' };
-      default:
-        return { id: ankrName, name: ankrName.charAt(0).toUpperCase() + ankrName.slice(1), logoId: ankrName };
-    }
-  };
-
-  const chainData = getChainData(chainId);
-  const logoUrl = `/cryptologos/${chainData.logoId}.svg`;
-
-  return {
-    id: chainData.id,
-    name: chainData.name,
-    logo: logoUrl,
-    ankrName: ankrName,
-  };
-});
+import { chains } from '@/data/chains';
+import { useRouter } from 'next/navigation';
 
 interface ChainSelectorProps {
   selectedChain: string;
@@ -51,10 +17,16 @@ interface ChainSelectorProps {
 
 export function ChainSelector({ selectedChain, onSelectChain }: ChainSelectorProps) {
   const selected = chains.find((chain) => chain.id === selectedChain) || chains[0];
+  const router = useRouter();
+
+  const handleChainSelect = (chainId: string) => {
+    onSelectChain(chainId);
+    router.push(`/${chainId}`);
+  };
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="flex items-center gap-2 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background hover:bg-accent">
+      <DropdownMenuTrigger className="flex items-center gap-2 rounded-md border border-gray-700/30 bg-gray-800/20 backdrop-blur-lg shadow-xl px-3 py-2 text-sm ring-offset-background hover:bg-accent">
         <div className="flex items-center gap-2">
           <Image
             src={selected.logo}
@@ -72,12 +44,15 @@ export function ChainSelector({ selectedChain, onSelectChain }: ChainSelectorPro
         </div>
         <ChevronDown className="h-4 w-4 opacity-50" />
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
+      <DropdownMenuContent
+        align="end"
+        className="border border-gray-700/30 bg-gray-800/20 backdrop-blur-lg shadow-xl w-full min-w-[180px]"
+      >
         {chains.map((chain) => (
           <DropdownMenuItem
             key={chain.id}
-            className="flex items-center gap-2 cursor-pointer"
-            onClick={() => onSelectChain(chain.id)}
+            className="flex items-center gap-2 cursor-pointer hover:bg-gray-700/40 hover:scale-[1.02] text-sm py-2 px-3 w-full transition-all duration-200"
+            onClick={() => handleChainSelect(chain.id)}
           >
             <img
               src={chain.logo}

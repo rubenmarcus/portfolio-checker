@@ -1,11 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { SUPPORTED_CHAINS } from '@/data/balance/chains';
+import { SUPPORTED_CHAINS, CHAIN_SLUGS } from '@/data/balance/providers';
 import { resolveEns } from '@/data/balance/ens';
-import {
-  fetchEvmBalances,
-  CHAIN_IDS,
-  CHAIN_SLUGS
-} from '@/data/balance/fetchers';
+import { fetchEvmBalances } from '@/data/balance/fetchers';
+import { WalletBalance } from '@/types/types';
+
+// In-memory cache for balance data with 60-second TTL
+interface CacheEntry {
+  data: WalletBalance[];
+  totals: {
+    usdValue: number;
+    tokenCount: number;
+  };
+  timestamp: number;
+}
+
+const balanceCache = new Map<string, CacheEntry>();
+const CACHE_TTL = 60 * 1000; // 60 seconds in milliseconds
 
 // Helper to get chain ID from slug
 const getChainIdFromSlug = (slug: string): number | null => {
@@ -45,23 +55,51 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    let balances;
+    // Create a cache key from address and chain
+    const cacheKey = `${resolvedAddress.toLowerCase()}:${chain.toLowerCase()}`;
+
+    // Check if we have a valid cache entry
+    const cachedEntry = balanceCache.get(cacheKey);
+    const currentTime = Date.now();
+
+    if (cachedEntry && (currentTime - cachedEntry.timestamp) < CACHE_TTL) {
+      console.log(`Cache hit for ${cacheKey}, returning cached data`);
+      // Return cached data if it's less than 60 seconds old
+      return NextResponse.json({
+        data: cachedEntry.data,
+        totals: cachedEntry.totals,
+        cached: true
+      });
+    }
+
+    // Cache miss or expired, fetch fresh data
+    console.log(`Cache miss for ${cacheKey}, fetching fresh data`);
 
     // Convert chain slug to chain ID
     const chainId = getChainIdFromSlug(chain);
-
-    balances = await fetchEvmBalances(resolvedAddress, chainId);
+    const balances = await fetchEvmBalances(resolvedAddress, chainId);
 
     // Calculate total USD value across all tokens
     const totalUsdValue = balances.reduce((sum, token) => sum + (token.usdValue || 0), 0);
 
+    // Create totals object
+    const totals = {
+      usdValue: totalUsdValue,
+      tokenCount: balances.length
+    };
+
+    // Store in cache
+    balanceCache.set(cacheKey, {
+      data: balances,
+      totals,
+      timestamp: currentTime
+    });
+
     // Return all balances without pagination
     return NextResponse.json({
       data: balances,
-      totals: {
-        usdValue: totalUsdValue,
-        tokenCount: balances.length
-      }
+      totals,
+      cached: false
     });
   } catch (error) {
     console.error('Error fetching balances:', error);
