@@ -1,4 +1,3 @@
-import type { PublicClient, WalletClient } from 'viem';
 
 // Token and Chain Types
 export interface Token {
@@ -13,29 +12,6 @@ export interface Token {
   };
   type?: string;
   lastUpdated?: string;
-}
-
-export interface Chain {
-  id: number;
-  name: string;
-  logoURI?: string;
-  nativeCurrency: {
-    name: string;
-    symbol: string;
-    decimals: number;
-  };
-  rpcUrls: {
-    default: {
-      http: string[];
-    };
-  };
-  blockExplorers?: {
-    default: {
-      name: string;
-      url: string;
-    };
-  };
-  testnet: boolean;
 }
 
 // Wallet Types

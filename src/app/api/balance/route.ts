@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { SUPPORTED_CHAINS, CHAIN_SLUGS } from '@/data/balance/providers';
+import { CHAIN_SLUGS } from '@/data/balance/providers';
 import { resolveEns } from '@/data/balance/ens';
-import { fetchEvmBalances } from '@/data/balance/fetchers';
+import { fetchEvmBalances } from '@/data/balance/fetchEvmBalance';
 import { WalletBalance } from '@/types/types';
 
 // In-memory cache for balance data with 60-second TTL

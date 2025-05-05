@@ -13,8 +13,7 @@ function isValidEvmAddress(address: string): boolean {
   return /^0x[a-fA-F0-9]{40}$/.test(address);
 }
 
-// Function to fetch balances from multiple EVM chains at once
-export async function fetchMultiChainBalances(address: string, chain: string = 'eth'): Promise<WalletBalance[]> {
+ async function fetchMultiChainBalances(address: string, chain: string = 'eth'): Promise<WalletBalance[]> {
   if (!isValidEvmAddress(address)) {
     console.warn('Invalid EVM address format, skipping Ankr API request');
     return [];

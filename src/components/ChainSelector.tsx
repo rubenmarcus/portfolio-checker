@@ -71,6 +71,3 @@ export function ChainSelector({ selectedChain, onSelectChain }: ChainSelectorPro
     </DropdownMenu>
   );
 }
-
-// Export the chains data to be used elsewhere
-export { chains };
