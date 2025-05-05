@@ -220,7 +220,7 @@ export function PortfolioTable({
                       </span>
                     </TableCell>
                     <TableCell>
-                      {formatCryptoBalance(token.formattedBalance)}
+                      {formatCryptoBalance(token.balance)}
                     </TableCell>
                     <TableCell className="text-right">
                       {token.usdValue ? (
