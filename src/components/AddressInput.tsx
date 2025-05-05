@@ -125,7 +125,7 @@ export function AddressInput({
             }`}
           />
           {error && address && !isAddressValid && (
-            <p className="text-xs text-red-400 mt-1 absolute -bottom-5">
+            <p className="text-xs text-red-400 mt-1 absolute mt-2">
               {error}
             </p>
           )}
