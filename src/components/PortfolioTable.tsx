@@ -10,7 +10,8 @@ import {
 import { formatCryptoBalance, truncateAddress } from '@/lib/utils';
 import { Pagination } from '@/components/ui/pagination';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Token, WalletBalance, PaginationMetadata } from '@/types/types';
+import { WalletBalance, PaginationMetadata } from '@/types/types';
+import Image from 'next/image';
 
 interface PortfolioTableProps {
   tokens: WalletBalance[];
@@ -35,11 +36,9 @@ export function PortfolioTable({
   totalTokenCount,
   defaultPageSize = 10
 }: PortfolioTableProps) {
-  // Local pagination state (used if backend pagination is not provided)
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(defaultPageSize);
 
-  // Calculate total balance - use provided total if available, otherwise calculate from tokens
   const totalUsdValue = useMemo(() => {
     if (providedTotalUsdValue !== undefined) {
       return providedTotalUsdValue;
@@ -47,29 +46,23 @@ export function PortfolioTable({
     return tokens.reduce((sum, token) => sum + (token.usdValue || 0), 0);
   }, [tokens, providedTotalUsdValue]);
 
-  // Get total token count - use provided count if available, otherwise use tokens length
   const displayedTokenCount = useMemo(() => {
     return totalTokenCount !== undefined ? totalTokenCount : tokens.length;
   }, [tokens.length, totalTokenCount]);
 
-  // Local pagination logic - used if backend pagination is not provided
   const paginatedTokens = useMemo(() => {
-    // If backend pagination is being used, return all tokens
     if (pagination && onPageChange) {
       return tokens;
     }
 
-    // Otherwise, handle pagination locally
     const startIndex = (currentPage - 1) * pageSize;
     return tokens.slice(startIndex, startIndex + pageSize);
   }, [tokens, currentPage, pageSize, pagination, onPageChange]);
 
-  // Calculate total pages for local pagination
   const totalPages = useMemo(() => {
     return Math.ceil(tokens.length / pageSize);
   }, [tokens.length, pageSize]);
 
-  // Local pagination metadata
   const localPagination = useMemo(() => {
     return {
       total: tokens.length,
@@ -168,7 +161,7 @@ export function PortfolioTable({
                 </TableRow>
               ))
             ) : (
-              // Actual token data
+
               paginatedTokens.map((token, index) => (
                 <TableRow
                   key={token.token.address || index}
@@ -179,7 +172,7 @@ export function PortfolioTable({
                 >
                   <TableCell className="flex items-center gap-2">
                     {token.token.logoURI ? (
-                      <img
+                      <Image
                         src={token.token.logoURI}
                         alt={token.token.symbol}
                         className="h-6 w-6 rounded-full shadow-sm"

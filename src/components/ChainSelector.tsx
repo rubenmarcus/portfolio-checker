@@ -10,6 +10,7 @@ import Image from 'next/image';
 import { chains } from '@/data/chains';
 import { useRouter } from 'next/navigation';
 
+
 interface ChainSelectorProps {
   selectedChain: string;
   onSelectChain: (chain: string) => void;
@@ -54,7 +55,7 @@ export function ChainSelector({ selectedChain, onSelectChain }: ChainSelectorPro
             className="flex items-center gap-2 cursor-pointer hover:bg-gray-700/40 hover:scale-[1.02] text-sm py-2 px-3 w-full transition-all duration-200"
             onClick={() => handleChainSelect(chain.id)}
           >
-            <img
+            <Image
               src={chain.logo}
               alt={chain.name}
               className="h-5 w-5"

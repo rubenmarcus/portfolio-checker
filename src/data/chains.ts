@@ -10,7 +10,6 @@ import { ChainData } from '@/types/types';
 export const chains: ChainData[] = SUPPORTED_EVM_CHAINS.map(chainId => {
   const ankrName = CHAIN_SLUGS[chainId as keyof typeof CHAIN_SLUGS] || '';
 
-  // Get UI data from SUPPORTED_CHAINS
   const chainInfo = SUPPORTED_CHAINS[ankrName as keyof typeof SUPPORTED_CHAINS] || {
     name: ankrName.charAt(0).toUpperCase() + ankrName.slice(1),
     id: ankrName

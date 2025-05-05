@@ -9,6 +9,7 @@ import { useAddressValidator, useAddressNavigation } from '@/hooks';
 import { WalletBalance, PortfolioTotals } from '@/types/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import Image from 'next/image';
 
 // Top accounts per chain for suggestions
 const topAccounts: Record<string, { address: string; label: string }[]> = {
@@ -104,7 +105,7 @@ export const ChainClient: React.FC<ChainClientProps> = ({ chainId }) => {
                     onClick={() => router.push(`/${chain.id}`)}
                     className="flex items-center gap-2"
                   >
-                    <img src={chain.logo} alt={chain.name} className="w-5 h-5" />
+                    <Image src={chain.logo} alt={chain.name} className="w-5 h-5" width="5" height="5" />
                     {chain.name}
                   </Button>
                 ))}
