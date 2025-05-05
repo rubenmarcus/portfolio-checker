@@ -3,7 +3,7 @@
 import { useParams, useRouter, usePathname } from 'next/navigation';
 import { Portfolio } from '@/components/Portfolio';
 import { chains } from '@/data/chains';
-import { useTokenData } from '@/hooks';
+import { useTokenData, useAddressNavigation } from '@/hooks';
 
 export function AddressPortfolioContainer() {
   const params = useParams();
@@ -20,17 +20,12 @@ export function AddressPortfolioContainer() {
   // Use our token data hook
   const { tokens, isLoading, error, totals } = useTokenData(chainId, address, chains);
 
-  // Handle address change
-  const handleAddressChange = (newAddress: string) => {
-    if (newAddress) {
-      router.push(`/${chainId}/${newAddress}`);
-    }
-  };
-
-  // Handle chain change
-  const handleChainChange = (newChain: string) => {
-    router.push(`/${newChain}/${address}`);
-  };
+  // Use the navigation hook instead of custom handlers
+  const { handleAddressChange, handleChainChange } = useAddressNavigation({
+    initialAddress: address,
+    initialChain: chainId,
+    validateBeforeNavigation: true
+  });
 
   // Handle pagination change without refetching data
   const handlePageChange = (newPage: number) => {

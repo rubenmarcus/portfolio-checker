@@ -8,17 +8,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { CHAIN_SYMBOLS } from '@/data/balance/providers';
 
-
-// Map of chain IDs to their native token symbols
-const CHAIN_SYMBOLS: Record<string, string> = {
-  'ethereum': 'ETH',
-  'polygon': 'MATIC',
-  'bsc': 'BNB',
-  'avalanche': 'AVAX',
-  'arbitrum': 'ETH',
-  'optimism': 'ETH',
-};
 
 interface AddressInputProps {
   address: string;

@@ -45,3 +45,13 @@ export const SUPPORTED_CHAINS = {
   optimism: { name: 'Optimism', id: 'optimism' },
   base: { name: 'Base', id: 'base' },
 };
+
+
+export const CHAIN_SYMBOLS: Record<string, string> = {
+  'ethereum': 'ETH',
+  'polygon': 'MATIC',
+  'bsc': 'BNB',
+  'avalanche': 'AVAX',
+  'arbitrum': 'ETH',
+  'optimism': 'ETH',
+};

@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { chains } from '@/data/chains';
 import { Portfolio } from '@/components/Portfolio';
-import { useAddressValidator } from '@/hooks';
+import { useAddressValidator, useAddressNavigation } from '@/hooks';
 import { WalletBalance, PortfolioTotals } from '@/types/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -50,8 +50,6 @@ interface ChainClientProps {
 
 export const ChainClient: React.FC<ChainClientProps> = ({ chainId }) => {
   const router = useRouter();
-  const [address, setAddress] = useState('');
-  const [selectedChain, setSelectedChain] = useState(chainId);
   const [allTokens, setAllTokens] = useState<WalletBalance[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -60,47 +58,31 @@ export const ChainClient: React.FC<ChainClientProps> = ({ chainId }) => {
     tokenCount: 0
   });
 
+  // Use our navigation hook
+  const {
+    address,
+    selectedChain,
+    setSelectedChain,
+    handleAddressChange,
+    handleChainChange
+  } = useAddressNavigation({
+    initialChain: chainId
+  });
+
   const { validate } = useAddressValidator();
 
   // Check if the chain is supported
   const isChainSupported = chains.some(chain => chain.id === chainId);
-
-  // Handle address submission
-  const handleAddressChange = (newAddress: string) => {
-    if (!newAddress) return;
-
-    if (validate(newAddress)) {
-      // Navigate to the chain/address route
-      router.push(`/${selectedChain}/${newAddress}`);
-    }
-  };
-
-  // Handle chain change
-  const handleChainChange = (newChain: string) => {
-    setSelectedChain(newChain);
-    router.push(`/${newChain}`);
-  };
 
   // Handle selecting a suggested account
   const handleSelectAccount = (address: string) => {
     router.push(`/${selectedChain}/${address}`);
   };
 
-  // Auto-submit with debounce when a valid address is entered
-  useEffect(() => {
-    if (address && validate(address)) {
-      const timeoutId = setTimeout(() => {
-        handleAddressChange(address);
-      }, 500); // Debounce
-
-      return () => clearTimeout(timeoutId);
-    }
-  }, [address, selectedChain]);
-
   // Update selected chain if route changes
   useEffect(() => {
     setSelectedChain(chainId);
-  }, [chainId]);
+  }, [chainId, setSelectedChain]);
 
   if (!isChainSupported) {
     return (

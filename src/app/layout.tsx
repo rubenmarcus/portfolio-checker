@@ -6,8 +6,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "OneBalance",
-  description: "Check your balances across multiple chains",
+  title: "Portfolio Checker",
+  description: "Check portfolios across multiple chains",
 };
 
 export default function RootLayout({

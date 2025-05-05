@@ -1,4 +1,3 @@
-// Page.tsx - Server Component
 import { ChainClient } from '@/components/ChainClient';
 
 interface ChainPageProps {
@@ -8,6 +7,9 @@ interface ChainPageProps {
 }
 
 export default async function ChainPage({ params }: ChainPageProps) {
-  const chainId = params.chain;
+
+  const { chain } = await params
+
+  const chainId = chain;
   return <ChainClient chainId={chainId} />;
 }
