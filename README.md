@@ -1,5 +1,7 @@
 #  Multi-Chain Crypto Portfolio Checker
 
+### Live Demo: https://portfolio-checker.vercel.app/
+
 Portfolio Checker is a modern web application that allows users to track their cryptocurrency portfolio across multiple blockchains in one unified interface. Built with Next.js, React 19, and TypeScript, it provides a clean and intuitive way to monitor token balances across various EVM-compatible chains.
 
 ## Features
