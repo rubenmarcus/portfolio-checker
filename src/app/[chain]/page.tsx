@@ -3,9 +3,9 @@ import { chains } from '@/data/chains';
 import { redirect } from 'next/navigation';
 
 interface ChainPageProps {
-  params: {
+  params: Promise<{
     chain: string;
-  };
+  }>;
 }
 
 export default async function ChainPage({ params }: ChainPageProps) {
