@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { CHAIN_SLUGS } from '@/data/balance/providers';
 import { resolveEns } from '@/data/balance/ens';
 import { fetchEvmBalances } from '@/data/balance/fetchEvmBalance';
-import { WalletBalance } from '@/types/types';
+import { CHAIN_SLUGS } from '@/data/balance/providers';
+import type { WalletBalance } from '@/types/types';
+import { type NextRequest, NextResponse } from 'next/server';
 
 // In-memory cache for balance data with 60-second TTL
 interface CacheEntry {
@@ -49,7 +49,10 @@ export async function GET(request: NextRequest) {
   if (address.endsWith('.eth')) {
     const resolved = await resolveEns(address);
     if (!resolved) {
-      return NextResponse.json({ error: 'Invalid ENS name or unable to resolve' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Invalid ENS name or unable to resolve' },
+        { status: 400 }
+      );
     }
     resolvedAddress = resolved;
   }
@@ -62,13 +65,13 @@ export async function GET(request: NextRequest) {
     const cachedEntry = balanceCache.get(cacheKey);
     const currentTime = Date.now();
 
-    if (cachedEntry && (currentTime - cachedEntry.timestamp) < CACHE_TTL) {
+    if (cachedEntry && currentTime - cachedEntry.timestamp < CACHE_TTL) {
       console.log(`Cache hit for ${cacheKey}, returning cached data`);
       // Return cached data if it's less than 60 seconds old
       return NextResponse.json({
         data: cachedEntry.data,
         totals: cachedEntry.totals,
-        cached: true
+        cached: true,
       });
     }
 
@@ -80,26 +83,29 @@ export async function GET(request: NextRequest) {
     const balances = await fetchEvmBalances(resolvedAddress, chainId);
 
     // Calculate total USD value across all tokens
-    const totalUsdValue = balances.reduce((sum, token) => sum + (token.usdValue || 0), 0);
+    const totalUsdValue = balances.reduce(
+      (sum, token) => sum + (token.usdValue || 0),
+      0
+    );
 
     // Create totals object
     const totals = {
       usdValue: totalUsdValue,
-      tokenCount: balances.length
+      tokenCount: balances.length,
     };
 
     // Store in cache
     balanceCache.set(cacheKey, {
       data: balances,
       totals,
-      timestamp: currentTime
+      timestamp: currentTime,
     });
 
     // Return all balances without pagination
     return NextResponse.json({
       data: balances,
       totals,
-      cached: false
+      cached: false,
     });
   } catch (error) {
     console.error('Error fetching balances:', error);

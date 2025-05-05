@@ -1,14 +1,14 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
-import { Header } from "@/components/Header";
-import { WalletHistoryProvider } from "@/context/WalletHistoryContext";
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
+import './globals.css';
+import { Header } from '@/components/Header';
+import { WalletHistoryProvider } from '@/context/WalletHistoryContext';
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: "Portfolio Checker",
-  description: "Check portfolios across multiple chains",
+  title: 'Portfolio Checker',
+  description: 'Check portfolios across multiple chains',
 };
 
 export default function RootLayout({
@@ -19,15 +19,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-          <WalletHistoryProvider>
-            <div className="animated-background"></div>
-            <div className="content">
-              <div className="container mx-auto px-4 py-8">
-                <Header />
-                {children}
-              </div>
+        <WalletHistoryProvider>
+          <div className="animated-background" />
+          <div className="content">
+            <div className="container mx-auto px-4 py-8">
+              <Header />
+              {children}
             </div>
-          </WalletHistoryProvider>
+          </div>
+        </WalletHistoryProvider>
       </body>
     </html>
   );

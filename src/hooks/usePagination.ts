@@ -1,5 +1,5 @@
-import { useState, useMemo } from 'react';
-import { PaginationMetadata } from '@/types/types';
+import type { PaginationMetadata } from '@/types/types';
+import { useMemo, useState } from 'react';
 
 interface PaginationOptions {
   defaultPage?: number;
@@ -21,7 +21,11 @@ export function usePagination<T>(
   items: T[],
   options: PaginationOptions
 ): PaginationResult<T> {
-  const { defaultPage = 1, defaultPageSize = 10, totalItems: externalTotalCount } = options;
+  const {
+    defaultPage = 1,
+    defaultPageSize = 10,
+    totalItems: externalTotalCount,
+  } = options;
 
   const [currentPage, setCurrentPage] = useState(defaultPage);
   const [pageSize, setPageSize] = useState(defaultPageSize);
@@ -46,7 +50,7 @@ export function usePagination<T>(
       total: totalItems,
       page: currentPage,
       limit: pageSize,
-      pages: totalPages
+      pages: totalPages,
     };
   }, [totalItems, currentPage, pageSize, totalPages]);
 
@@ -64,6 +68,6 @@ export function usePagination<T>(
     paginatedItems,
     paginationMetadata,
     setPage,
-    setPageSize
+    setPageSize,
   };
 }

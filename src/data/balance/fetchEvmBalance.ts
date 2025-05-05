@@ -1,19 +1,34 @@
-import { WalletBalance, Token } from "@/types/types";
+import type { Token, WalletBalance } from '@/types/types';
 import {
   ANKR_API_ENDPOINT,
   ANKR_API_KEY,
-  CHAIN_SLUGS,
   CHAIN_IDS,
-  SUPPORTED_EVM_CHAINS
+  CHAIN_SLUGS,
+  SUPPORTED_EVM_CHAINS,
 } from './providers';
 
+// Interface for the Ankr API asset response
+interface AnkrAsset {
+  blockchain: string;
+  contractAddress?: string;
+  tokenSymbol?: string;
+  tokenName?: string;
+  tokenDecimals?: number;
+  thumbnail?: string;
+  tokenPrice?: string;
+  balance: string;
+  balanceUsd?: string;
+}
 
 // Check if address is a valid EVM address
 function isValidEvmAddress(address: string): boolean {
   return /^0x[a-fA-F0-9]{40}$/.test(address);
 }
 
- async function fetchMultiChainBalances(address: string, chain: string = 'eth'): Promise<WalletBalance[]> {
+async function fetchMultiChainBalances(
+  address: string,
+  chain = 'eth'
+): Promise<WalletBalance[]> {
   if (!isValidEvmAddress(address)) {
     console.warn('Invalid EVM address format, skipping Ankr API request');
     return [];
@@ -48,26 +63,27 @@ function isValidEvmAddress(address: string): boolean {
       return [];
     }
 
-    return result.assets.map((asset: any) => {
+    return result.assets.map((asset: AnkrAsset) => {
       const chainId = getChainId(asset.blockchain);
 
       const token: Token = {
-        address: asset.contractAddress || '0x0000000000000000000000000000000000000000',
+        address:
+          asset.contractAddress || '0x0000000000000000000000000000000000000000',
         symbol: asset.tokenSymbol || asset.blockchain,
         name: asset.tokenName || 'Unknown',
         decimals: asset.tokenDecimals || 18,
         logoURI: asset.thumbnail,
         chainId,
         price: {
-          USD: asset.tokenPrice ? parseFloat(asset.tokenPrice) : null
-        }
+          USD: asset.tokenPrice ? Number.parseFloat(asset.tokenPrice) : null,
+        },
       };
 
       return {
         token,
         balance: asset.balance,
         formattedBalance: asset.balance,
-        usdValue: parseFloat(asset.balanceUsd || '0')
+        usdValue: Number.parseFloat(asset.balanceUsd || '0'),
       };
     });
   } catch (error) {
@@ -90,8 +106,12 @@ function getChainId(blockchain: string): number {
   return chainIds[blockchain] || CHAIN_IDS.ETHEREUM;
 }
 
-export const formatBalance = (balance: string | number, decimals: number): string => {
-  const num = typeof balance === 'string' ? Number.parseFloat(balance) : balance;
+export const formatBalance = (
+  balance: string | number,
+  decimals: number
+): string => {
+  const num =
+    typeof balance === 'string' ? Number.parseFloat(balance) : balance;
   if (Number.isNaN(num)) return '0';
   return num.toFixed(decimals);
 };
@@ -103,7 +123,8 @@ export const fetchEvmBalances = async (
   if (!evmAddress) return [];
 
   // Only fetch balances for the specified chain if provided, otherwise fetch for all supported chains
-  const supportedChainId = chainId !== null && SUPPORTED_EVM_CHAINS.some((id) => id === chainId);
+  const supportedChainId =
+    chainId !== null && SUPPORTED_EVM_CHAINS.some((id) => id === chainId);
 
   const chain =
     supportedChainId && chainId !== null

@@ -46,12 +46,11 @@ export const SUPPORTED_CHAINS = {
   base: { name: 'Base', id: 'base' },
 };
 
-
 export const CHAIN_SYMBOLS: Record<string, string> = {
-  'ethereum': 'ETH',
-  'polygon': 'MATIC',
-  'bsc': 'BNB',
-  'avalanche': 'AVAX',
-  'arbitrum': 'ETH',
-  'optimism': 'ETH',
+  ethereum: 'ETH',
+  polygon: 'MATIC',
+  bsc: 'BNB',
+  avalanche: 'AVAX',
+  arbitrum: 'ETH',
+  optimism: 'ETH',
 };

@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
-import { AddressInput } from "./AddressInput"
-import { ChainSelector } from "./ChainSelector"
 import { useAddressValidator } from '@/hooks';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useCallback, useEffect, useState } from 'react';
+import { AddressInput } from './AddressInput';
+import { ChainSelector } from './ChainSelector';
 
 export const Header = () => {
   const { validate } = useAddressValidator();
@@ -36,25 +36,26 @@ export const Header = () => {
 
   return (
     <header className="w-full">
-    <div className="flex flex-col space-y-4 sm:space-y-0 sm:flex-row sm:justify-between sm:items-center mb-8">
-      <h1 className="text-3xl font-bold"><Link href="/">Portfolio Checker</Link></h1>
-      <div className="flex items-center space-x-2">
-        <ChainSelector
-          selectedChain={chainId}
-          onSelectChain={handleChainChange}
+      <div className="flex flex-col space-y-4 sm:space-y-0 sm:flex-row sm:justify-between sm:items-center mb-8">
+        <h1 className="text-3xl font-bold">
+          <Link href="/">Portfolio Checker</Link>
+        </h1>
+        <div className="flex items-center space-x-2">
+          <ChainSelector
+            selectedChain={chainId}
+            onSelectChain={handleChainChange}
+          />
+        </div>
+      </div>
+      <div className="w-full">
+        <AddressInput
+          address={address}
+          onChange={handleAddressChange}
+          className="w-full"
+          chainId={chainId}
+          validate={validate}
         />
       </div>
-
-    </div>
-    <div className="w-full">
-    <AddressInput
-        address={address}
-        onChange={handleAddressChange}
-        className="w-full"
-        chainId={chainId}
-        validate={validate}
-      />
-    </div>
     </header>
-  )
-}
+  );
+};

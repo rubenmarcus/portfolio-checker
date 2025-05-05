@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useCallback, useState } from 'react';
 
 interface AddressValidatorResult {
   isValid: boolean;
@@ -14,7 +14,9 @@ export function useAddressValidator(): AddressValidatorResult {
       return false;
     }
 
-    const isValidAddress = (address.startsWith('0x') && address.length === 42) || address.endsWith('.eth');
+    const isValidAddress =
+      (address.startsWith('0x') && address.length === 42) ||
+      address.endsWith('.eth');
 
     if (!isValidAddress) {
       return false;
@@ -29,7 +31,9 @@ export function useAddressValidator(): AddressValidatorResult {
       return false;
     }
 
-    const isValidAddress = (address.startsWith('0x') && address.length === 42) || address.endsWith('.eth');
+    const isValidAddress =
+      (address.startsWith('0x') && address.length === 42) ||
+      address.endsWith('.eth');
 
     if (!isValidAddress) {
       setError('Please enter a valid Ethereum address or ENS name');
@@ -43,6 +47,6 @@ export function useAddressValidator(): AddressValidatorResult {
   return {
     isValid: error === '',
     error,
-    validate
+    validate,
   };
 }

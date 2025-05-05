@@ -1,7 +1,13 @@
 'use client';
 
-import { createContext, useState, useContext, useEffect, ReactNode } from 'react';
 import { usePathname } from 'next/navigation';
+import {
+  type ReactNode,
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 
 type HistoryEntry = {
   chain: string;
@@ -15,7 +21,9 @@ interface WalletHistoryContextType {
   clearHistory: () => void;
 }
 
-const WalletHistoryContext = createContext<WalletHistoryContextType | undefined>(undefined);
+const WalletHistoryContext = createContext<
+  WalletHistoryContextType | undefined
+>(undefined);
 
 export function WalletHistoryProvider({ children }: { children: ReactNode }) {
   const [searchHistory, setSearchHistory] = useState<HistoryEntry[]>([]);
@@ -49,11 +57,13 @@ export function WalletHistoryProvider({ children }: { children: ReactNode }) {
   }, [pathname]);
 
   const addToHistory = (chain: string, address: string) => {
-    setSearchHistory(prevHistory => {
+    setSearchHistory((prevHistory) => {
       // Create new history entry
       const newHistory = [
         { chain, address, timestamp: Date.now() },
-        ...prevHistory.filter(item => !(item.chain === chain && item.address === address))
+        ...prevHistory.filter(
+          (item) => !(item.chain === chain && item.address === address)
+        ),
       ].slice(0, 10); // Keep only the 10 most recent searches
 
       // Save to localStorage
@@ -69,7 +79,9 @@ export function WalletHistoryProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <WalletHistoryContext.Provider value={{ searchHistory, addToHistory, clearHistory }}>
+    <WalletHistoryContext.Provider
+      value={{ searchHistory, addToHistory, clearHistory }}
+    >
       {children}
     </WalletHistoryContext.Provider>
   );
@@ -78,7 +90,9 @@ export function WalletHistoryProvider({ children }: { children: ReactNode }) {
 export function useWalletHistory() {
   const context = useContext(WalletHistoryContext);
   if (context === undefined) {
-    throw new Error('useWalletHistory must be used within a WalletHistoryProvider');
+    throw new Error(
+      'useWalletHistory must be used within a WalletHistoryProvider'
+    );
   }
   return context;
 }

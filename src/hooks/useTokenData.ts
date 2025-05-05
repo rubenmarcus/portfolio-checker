@@ -1,12 +1,15 @@
-import { useState, useEffect } from 'react';
-import { WalletBalance, PortfolioTotals, TokenData } from '@/types/types';
-import { ChainData } from '@/types/types';
+import type { PortfolioTotals, TokenData, WalletBalance } from '@/types/types';
+import type { ChainData } from '@/types/types';
+import { useEffect, useState } from 'react';
 
 // Use this to cache tokens across navigation
-const tokensCache = new Map<string, {
-  tokens: WalletBalance[],
-  totals: PortfolioTotals
-}>();
+const tokensCache = new Map<
+  string,
+  {
+    tokens: WalletBalance[];
+    totals: PortfolioTotals;
+  }
+>();
 
 export function useTokenData(
   chainId: string,
@@ -18,7 +21,7 @@ export function useTokenData(
   const [error, setError] = useState('');
   const [totals, setTotals] = useState<PortfolioTotals>({
     usdValue: 0,
-    tokenCount: 0
+    tokenCount: 0,
   });
 
   useEffect(() => {
@@ -46,7 +49,7 @@ export function useTokenData(
       setError('');
 
       try {
-        const chain = chainData.find(c => c.id === chainId);
+        const chain = chainData.find((c) => c.id === chainId);
 
         const response = await fetch(
           `/api/balance?address=${address}&chain=${chain?.ankrName || 'eth'}`
@@ -59,19 +62,26 @@ export function useTokenData(
 
         const responseData = await response.json();
         const tokensData = responseData.data || [];
-        const totalsData = responseData.totals || { usdValue: 0, tokenCount: 0 };
+        const totalsData = responseData.totals || {
+          usdValue: 0,
+          tokenCount: 0,
+        };
 
         // Cache the results
         tokensCache.set(cacheKey, {
           tokens: tokensData,
-          totals: totalsData
+          totals: totalsData,
         });
 
         setTokens(tokensData);
         setTotals(totalsData);
       } catch (error) {
         console.error('Failed to fetch tokens:', error);
-        setError(error instanceof Error ? error.message : 'An error occurred while fetching balances');
+        setError(
+          error instanceof Error
+            ? error.message
+            : 'An error occurred while fetching balances'
+        );
         setTokens([]);
       } finally {
         setIsLoading(false);
@@ -85,6 +95,6 @@ export function useTokenData(
     tokens,
     totals,
     isLoading,
-    error
+    error,
   };
 }

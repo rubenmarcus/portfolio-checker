@@ -9,7 +9,13 @@ export default function ChainLayout({
 }) {
   return (
     <div className="blockchain-portfolio">
-      <Suspense fallback={<div className="w-full h-full flex items-center justify-center">Loading...</div>}>
+      <Suspense
+        fallback={
+          <div className="w-full h-full flex items-center justify-center">
+            Loading...
+          </div>
+        }
+      >
         {children}
       </Suspense>
     </div>

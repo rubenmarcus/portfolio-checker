@@ -1,22 +1,26 @@
-import React from 'react';
-import { ChevronDown } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { chains } from '@/data/chains';
+import { ChevronDown } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { chains } from '@/data/chains';
+import React from 'react';
 
 interface ChainSelectorProps {
   selectedChain: string;
   onSelectChain: (chain: string) => void;
 }
 
-export function ChainSelector({ selectedChain, onSelectChain }: ChainSelectorProps) {
-  const selected = chains.find((chain) => chain.id === selectedChain) || chains[0];
+export function ChainSelector({
+  selectedChain,
+  onSelectChain,
+}: ChainSelectorProps) {
+  const selected =
+    chains.find((chain) => chain.id === selectedChain) || chains[0];
 
   return (
     <DropdownMenu>

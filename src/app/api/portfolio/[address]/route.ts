@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 
 // This is a placeholder API implementation
 // Replace with your actual data fetching logic
@@ -9,15 +9,15 @@ export async function GET(
   try {
     const address = params.address;
     const searchParams = request.nextUrl.searchParams;
-    const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '10');
+    const page = Number.parseInt(searchParams.get('page') || '1');
+    const limit = Number.parseInt(searchParams.get('limit') || '10');
 
     // Placeholder for real API call to fetch token data
     // In a real implementation, you would fetch tokens for this address from your backend or blockchain API
     // This is just a mock implementation
 
     // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
     // Generate some placeholder tokens
     const mockTokens = [];
@@ -37,16 +37,19 @@ export async function GET(
           logoURI: `https://cryptologos.cc/logos/${['ethereum', 'tether', 'dai', 'chainlink', 'uniswap'][i % 5]}-logo.png`,
           chainId: 1,
           type: ['token', 'stablecoin', 'governance', 'utility'][i % 4],
-          lastUpdated: new Date().toISOString()
+          lastUpdated: new Date().toISOString(),
         },
         balance: ((1000000 / (i + 1)) * Math.random()).toString(),
         formattedBalance: ((1000 / (i + 1)) * Math.random()).toFixed(4),
-        usdValue: (10000 / (i + 1)) * Math.random()
+        usdValue: (10000 / (i + 1)) * Math.random(),
       });
     }
 
     // Calculate total USD value
-    const totalUsdValue = mockTokens.reduce((sum, token) => sum + token.usdValue, 0);
+    const totalUsdValue = mockTokens.reduce(
+      (sum, token) => sum + token.usdValue,
+      0
+    );
 
     return NextResponse.json({
       tokens: mockTokens,
@@ -54,10 +57,10 @@ export async function GET(
         total: totalTokenCount,
         page: page,
         limit: limit,
-        pages: Math.ceil(totalTokenCount / limit)
+        pages: Math.ceil(totalTokenCount / limit),
       },
       totalUsdValue,
-      totalTokenCount
+      totalTokenCount,
     });
   } catch (error) {
     console.error('API error:', error);

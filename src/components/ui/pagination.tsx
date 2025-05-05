@@ -1,7 +1,7 @@
-import * as React from "react";
-import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { ButtonProps, buttonVariants } from "@/components/ui/button";
+import { ButtonProps, buttonVariants } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+import { ChevronLeft, ChevronRight, MoreHorizontal } from 'lucide-react';
+import * as React from 'react';
 
 interface PaginationProps extends React.HTMLAttributes<HTMLDivElement> {
   total: number;
@@ -45,7 +45,7 @@ export function Pagination({
         { length: rightSiblingIndex - leftSiblingIndex + 1 },
         (_, i) => leftSiblingIndex + i
       );
-      return [1, "...", ...middleRange, "...", totalPages];
+      return [1, '...', ...middleRange, '...', totalPages];
     }
 
     if (shouldShowLeftDots && !shouldShowRightDots) {
@@ -53,7 +53,7 @@ export function Pagination({
         { length: totalPages - leftSiblingIndex + 1 },
         (_, i) => leftSiblingIndex + i
       );
-      return [1, "...", ...rightRange];
+      return [1, '...', ...rightRange];
     }
 
     if (!shouldShowLeftDots && shouldShowRightDots) {
@@ -61,7 +61,7 @@ export function Pagination({
         { length: rightSiblingIndex },
         (_, i) => i + 1
       );
-      return [...leftRange, "...", totalPages];
+      return [...leftRange, '...', totalPages];
     }
 
     return Array.from({ length: totalPages }, (_, i) => i + 1);
@@ -71,7 +71,10 @@ export function Pagination({
 
   return (
     <div
-      className={cn("flex flex-wrap items-center justify-center gap-2", className)}
+      className={cn(
+        'flex flex-wrap items-center justify-center gap-2',
+        className
+      )}
       {...props}
     >
       <PaginationButton
@@ -82,8 +85,10 @@ export function Pagination({
         <ChevronLeft className="h-4 w-4" />
       </PaginationButton>
       {pages.map((pageNumber, i) => (
-        <React.Fragment key={i}>
-          {pageNumber === "..." ? (
+        <React.Fragment
+          key={pageNumber === '...' ? `ellipsis-${i}` : `page-${pageNumber}`}
+        >
+          {pageNumber === '...' ? (
             <PaginationEllipsis />
           ) : (
             <PaginationButton
@@ -107,7 +112,8 @@ export function Pagination({
   );
 }
 
-interface PaginationButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface PaginationButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   isActive?: boolean;
 }
 
@@ -120,10 +126,10 @@ export function PaginationButton({
     <button
       className={cn(
         buttonVariants({
-          variant: isActive ? "default" : "outline",
-          size: "icon",
+          variant: isActive ? 'default' : 'outline',
+          size: 'icon',
         }),
-        "h-8 w-8 rounded-md p-0",
+        'h-8 w-8 rounded-md p-0',
         className
       )}
       {...props}
