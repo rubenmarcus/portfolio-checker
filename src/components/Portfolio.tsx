@@ -47,7 +47,7 @@ export function Portfolio({
     <div className="w-full">
       {externalError && <p className="text-red-500 mt-2 text-sm">{externalError}</p>}
       {address && !isLoading && tokens.length > 0 && (
-        <h1 className="mt-4 text-3xl pb-8 text-muted-foreground text-left flex items-center gap-2">
+        <h1 className="mt-4 text-sm md:text-3xl pb-8 text-muted-foreground text-left flex items-center gap-2">
           {address.endsWith('.eth') ? address : truncateAddress(address, 10)}
           <button
             onClick={handleCopyAddress}

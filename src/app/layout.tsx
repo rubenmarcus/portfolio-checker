@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import { Header } from "@/components/Header";
 import { WalletHistoryProvider } from "@/context/WalletHistoryContext";
 
@@ -20,7 +19,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <TooltipProvider>
           <WalletHistoryProvider>
             <div className="animated-background"></div>
             <div className="content">
@@ -30,7 +28,6 @@ export default function RootLayout({
               </div>
             </div>
           </WalletHistoryProvider>
-        </TooltipProvider>
       </body>
     </html>
   );

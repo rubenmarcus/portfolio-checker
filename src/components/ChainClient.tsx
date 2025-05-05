@@ -17,7 +17,6 @@ interface ChainClientProps {
 }
 
 export const ChainClient: React.FC<ChainClientProps> = ({ chainId }) => {
-  const [address, setAddress] = useState('');
   const [selectedChain, setSelectedChain] = useState(chainId);
 
   // Update selectedChain when chainId prop changes
@@ -62,9 +61,8 @@ export const ChainClient: React.FC<ChainClientProps> = ({ chainId }) => {
   }
 
   return (
-    <div className="relative z-10 flex flex-col items-center p-4 sm:p-8 w-full h-full">
+    <div className="relative z-10 flex flex-col items-center  w-full h-full">
       <div className="w-full container mx-auto">
-        Please enter an address to view their balances on {chains.find(chain => chain.id === selectedChain)?.name || selectedChain}
 
         <Card className="w-full mt-8 rounded-md border border-gray-700/30 backdrop-blur-lg bg-gray-800/20 shadow-xl">
           <CardHeader>
@@ -80,7 +78,6 @@ export const ChainClient: React.FC<ChainClientProps> = ({ chainId }) => {
                   <Button
                     variant="blue"
                     className="flex items-center gap-2"
-                    onClick={() => setAddress(account.address)}
                   >
                     {account.label}
                   </Button>

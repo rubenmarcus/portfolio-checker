@@ -1,15 +1,30 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { AddressInput } from "./AddressInput"
 import { ChainSelector } from "./ChainSelector"
 import { useAddressValidator } from '@/hooks';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 export const Header = () => {
   const { validate } = useAddressValidator();
   const [address, setAddress] = useState('');
   const [chainId, setChainId] = useState('ethereum');
+  const pathname = usePathname();
+
+  useEffect(() => {
+    // Extract chain ID from pathname if present
+    if (pathname) {
+      const pathSegments = pathname.split('/').filter(Boolean);
+      if (pathSegments.length > 0) {
+        const pathChain = pathSegments[0];
+        if (pathChain && pathChain !== chainId) {
+          setChainId(pathChain);
+        }
+      }
+    }
+  }, [pathname, chainId]);
 
   const handleAddressChange = useCallback((newAddress: string) => {
     setAddress(newAddress);

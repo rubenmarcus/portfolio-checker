@@ -1,16 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
-import { Info } from 'lucide-react';
+import { useRouter, usePathname } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
 import { CHAIN_SYMBOLS } from '@/data/balance/providers';
 import { useWalletHistory } from '@/context/WalletHistoryContext';
+import { chains } from '@/data/chains';
 
 interface AddressInputProps {
   address: string;
@@ -30,10 +24,19 @@ export function AddressInput({
   validate,
 }: AddressInputProps) {
   const router = useRouter();
+  const pathname = usePathname();
   const { addToHistory } = useWalletHistory();
   const [isFocused, setIsFocused] = useState(false);
   const [currentChainSymbol, setCurrentChainSymbol] = useState(CHAIN_SYMBOLS[chainId] || 'ETH');
   const [isAddressValid, setIsAddressValid] = useState(false);
+
+  const isChainPage = pathname === `/${chainId}`;
+
+
+  const isRootPage = pathname === '/';
+
+  // Get the current chain name
+  const chainName = chains.find(chain => chain.id === chainId)?.name || chainId;
 
   // Update chain symbol when chainId changes
   useEffect(() => {
@@ -74,8 +77,15 @@ export function AddressInput({
   const defaultPlaceholder = `Enter ${currentChainSymbol} address (0x...) or ENS domain`;
 
   return (
-    <div className={`relative flex items-center gap-2 ${className}`}>
-      <div className="relative flex-grow max-w-xs">
+    <div className={isRootPage ? 'w-full flex flex-col items-center pb-10' : ''}>
+       {isChainPage && (
+          <p className="mb-2 text-sm text-muted-foreground">
+            Please enter an address to view their balances on {chainName}
+          </p>
+        )}
+    <div className={`flex items-center gap-2 ${isRootPage ? 'justify-center' : ''} ${className}`}>
+
+      <div className={`flex-grow ${isRootPage ? 'max-w-md' : 'max-w-xs'}`}>
         <Input
           value={address}
           onChange={handleChange}
@@ -83,22 +93,10 @@ export function AddressInput({
           onBlur={() => setIsFocused(false)}
           onKeyDown={handleKeyDown}
           placeholder={placeholder || defaultPlaceholder}
-          className={`pr-8 border border-gray-700/30 bg-gray-800/20 backdrop-blur-lg shadow-xl ${
+          className={`border border-gray-700/30 bg-gray-800/20 backdrop-blur-lg shadow-xl outline-none focus:outline-none focus:ring-0 ${
             isAddressValid ? 'border-green-400' : (isFocused ? 'border-blue-400' : '')
           }`}
         />
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="absolute right-2 top-1/2 -translate-y-1/2 cursor-help">
-                <Info className="h-4 w-4 text-muted-foreground" />
-              </div>
-            </TooltipTrigger>
-            <TooltipContent side="top" className="max-w-xs">
-              <p>Enter an Ethereum address (0x format) or ENS domain name (name.eth) to view balances</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
       </div>
       <Button
         onClick={handleSubmit}
@@ -107,6 +105,7 @@ export function AddressInput({
       >
         <span>Submit</span>
       </Button>
+    </div>
     </div>
   );
 }

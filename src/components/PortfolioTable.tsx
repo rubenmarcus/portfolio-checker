@@ -120,7 +120,7 @@ export function PortfolioTable({
             {isLoading || totalUsdValue === 0 ? (
               <Skeleton className="h-9 w-32 mt-1" />
             ) : (
-              <p className="text-3xl font-bold">${totalUsdValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+              <p className="text-sm md:text-3xl font-bold">${totalUsdValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
             )}
           </div>
           <div className="text-right">
@@ -128,7 +128,7 @@ export function PortfolioTable({
             {isLoading || displayedTokenCount === 0 ? (
               <Skeleton className="h-9 w-16 mt-1 ml-auto" />
             ) : (
-              <p className="text-3xl font-bold">{displayedTokenCount}</p>
+              <p className="text-sm md:text-3xl font-bold">{displayedTokenCount}</p>
             )}
           </div>
         </div>

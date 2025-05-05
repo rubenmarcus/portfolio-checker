@@ -25,7 +25,6 @@ export default function HomePage() {
 
   return (
     <div className="space-y-8">
-      <h1 className="text-center text-2xl py-8 font-bold">Please search for an address on the input above.</h1>
 
       {/* Chain selector */}
       <div className="flex flex-wrap justify-center gap-2 mb-6">
