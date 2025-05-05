@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { Info } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -9,61 +10,66 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { CHAIN_SYMBOLS } from '@/data/balance/providers';
-
+import { useWalletHistory } from '@/context/WalletHistoryContext';
 
 interface AddressInputProps {
   address: string;
   onChange: (address: string) => void;
-  isLoading?: boolean;
   className?: string;
   placeholder?: string;
-  onSubmit?: () => void;
-  chainSymbol?: string;
   chainId?: string;
+  validate: (address: string) => boolean;
 }
 
 export function AddressInput({
   address,
   onChange,
-  isLoading = false,
   className = '',
   placeholder,
-  onSubmit,
-  chainSymbol,
   chainId = 'ethereum',
+  validate,
 }: AddressInputProps) {
+  const router = useRouter();
+  const { addToHistory } = useWalletHistory();
   const [isFocused, setIsFocused] = useState(false);
-  const [currentChainSymbol, setCurrentChainSymbol] = useState(chainSymbol || 'ETH');
+  const [currentChainSymbol, setCurrentChainSymbol] = useState(CHAIN_SYMBOLS[chainId] || 'ETH');
+  const [isAddressValid, setIsAddressValid] = useState(false);
 
+  // Update chain symbol when chainId changes
   useEffect(() => {
-    // If chainSymbol is provided as a prop, use it (for backward compatibility)
-    if (chainSymbol) {
-      setCurrentChainSymbol(chainSymbol);
-      return;
-    }
+    const symbol = CHAIN_SYMBOLS[chainId] || 'ETH';
+    setCurrentChainSymbol(symbol);
+  }, [chainId]);
 
-    // Otherwise, look up the symbol from our mapping based on chainId
-    if (chainId) {
-      const symbol = CHAIN_SYMBOLS[chainId] || 'ETH'; // Default to ETH if not found
-      setCurrentChainSymbol(symbol);
+  // Validate address when it changes
+  useEffect(() => {
+    if (address) {
+      setIsAddressValid(validate(address));
+    } else {
+      setIsAddressValid(false);
     }
-  }, [chainId, chainSymbol]);
+  }, [address, validate]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     onChange(e.target.value);
-  };
+  }, [onChange]);
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && onSubmit) {
-      onSubmit();
+  const handleSubmit = useCallback(() => {
+    if (validate(address)) {
+      // Add to search history
+      addToHistory(chainId, address);
+
+      // Navigate to the address page
+      router.push(`/${chainId}/${address}`);
+      onChange(''); // Clear address after submission
     }
-  };
+  }, [address, chainId, router, validate, onChange, addToHistory]);
 
-  const isValidAddress = (address: string) => {
-    return address &&
-           (address.startsWith('0x') && address.length === 42) ||
-           address.endsWith('.eth');
-  };
+  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleSubmit();
+    }
+  }, [handleSubmit]);
 
   const defaultPlaceholder = `Enter ${currentChainSymbol} address (0x...) or ENS domain`;
 
@@ -78,9 +84,8 @@ export function AddressInput({
           onKeyDown={handleKeyDown}
           placeholder={placeholder || defaultPlaceholder}
           className={`pr-8 border border-gray-700/30 bg-gray-800/20 backdrop-blur-lg shadow-xl ${
-            isValidAddress(address) ? 'border-green-400' : (isFocused ? 'border-blue-400' : '')
+            isAddressValid ? 'border-green-400' : (isFocused ? 'border-blue-400' : '')
           }`}
-          disabled={isLoading}
         />
         <TooltipProvider>
           <Tooltip>
@@ -95,16 +100,13 @@ export function AddressInput({
           </Tooltip>
         </TooltipProvider>
       </div>
-      {onSubmit && (
-        <Button
-          onClick={onSubmit}
-          disabled={isLoading}
-          className="bg-blue-800/80 backdrop-blur-sm text-white shadow-md shadow-blue-900/30 hover:bg-blue-700/90 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] rounded-md"
-          type="button"
-        >
-          <span>Submit</span>
-        </Button>
-      )}
+      <Button
+        onClick={handleSubmit}
+        className="bg-blue-800/80 backdrop-blur-sm text-white shadow-md shadow-blue-900/30 hover:bg-blue-700/90 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] rounded-md"
+        type="button"
+      >
+        <span>Submit</span>
+      </Button>
     </div>
   );
 }

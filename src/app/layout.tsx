@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { Header } from "@/components/Header";
+import { WalletHistoryProvider } from "@/context/WalletHistoryContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,10 +21,15 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <TooltipProvider>
-          <div className="animated-background"></div>
-          <div className="content">
-            {children}
-          </div>
+          <WalletHistoryProvider>
+            <div className="animated-background"></div>
+            <div className="content">
+              <div className="container mx-auto px-4 py-8">
+                <Header />
+                {children}
+              </div>
+            </div>
+          </WalletHistoryProvider>
         </TooltipProvider>
       </body>
     </html>

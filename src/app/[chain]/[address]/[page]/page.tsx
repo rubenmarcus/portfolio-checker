@@ -1,27 +1,52 @@
 'use client';
 
-import { useEffect } from 'react';
-import { useRouter, useParams } from 'next/navigation';
-import { AddressPortfolioContainer } from '@/components/AddressPortfolioContainer';
+import { useState, useEffect } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import { Portfolio } from '@/components/Portfolio';
+import { useTokenData } from '@/hooks';
+import { chains } from '@/data/chains';
 
-// This component effectively reuses the main address page component
-// The pagination parameter will be read from the URL in the parent component
-export default function AddressPageWithPagination() {
+export default function PagedPortfolioPage() {
   const params = useParams();
-  const chain = params.chain as string;
-  const address = params.address as string;
-  const page = params.page as string;
   const router = useRouter();
 
-  // On initial load, validate page is a number
-  useEffect(() => {
-    const pageNum = parseInt(page);
-    if (isNaN(pageNum) || pageNum < 1) {
-      // Redirect to page 1 if invalid
-      router.replace(`/${chain}/${address}`);
-    }
-  }, [chain, address, page, router]);
+  // Extract parameters from the URL
+  const chainId = (params.chain as string) || 'ethereum';
+  const address = params.address as string;
+  const pageParam = params.page as string;
+  const currentPage = pageParam ? parseInt(pageParam, 10) : 1;
 
-  // The container component handles all the portfolio logic
-  return <AddressPortfolioContainer />;
+
+  // Fetch token data
+  const { tokens, isLoading, error, totals } = useTokenData(chainId, address, chains);
+
+
+
+  const handlePageChange = (page: number) => {
+    if (page === 1) {
+      router.push(`/${chainId}/${address}`);
+    } else {
+      router.push(`/${chainId}/${address}/${page}`);
+    }
+  };
+
+  // Calculate pagination values
+  const pageSize = 10;
+
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <Portfolio
+        address={address}
+        chainId={chainId}
+        tokens={tokens}
+        isLoading={isLoading}
+        error={error}
+        totals={totals}
+        onPageChange={handlePageChange}
+        currentPage={currentPage}
+        pageSize={pageSize}
+        totalTokenCount={tokens.length}
+      />
+    </div>
+  );
 }

@@ -7,9 +7,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import Image from 'next/image';
+import Link from 'next/link';
 import { chains } from '@/data/chains';
-import { useRouter } from 'next/navigation';
-
 
 interface ChainSelectorProps {
   selectedChain: string;
@@ -18,12 +17,6 @@ interface ChainSelectorProps {
 
 export function ChainSelector({ selectedChain, onSelectChain }: ChainSelectorProps) {
   const selected = chains.find((chain) => chain.id === selectedChain) || chains[0];
-  const router = useRouter();
-
-  const handleChainSelect = (chainId: string) => {
-    onSelectChain(chainId);
-    router.push(`/${chainId}`);
-  };
 
   return (
     <DropdownMenu>
@@ -33,12 +26,11 @@ export function ChainSelector({ selectedChain, onSelectChain }: ChainSelectorPro
             src={selected.logo}
             alt={selected.name}
             style={{ objectFit: 'contain' }}
-            width={20}
-            height={20}
+            width="10"
+            height="10"
             onError={(e) => {
-              // Fallback if image fails to load
               const target = e.target as HTMLImageElement;
-              target.src = '/cryptologos/ethereum.svg';
+              target.src = '/cryptologos/eth.svg';
             }}
           />
           <span>{selected.name}</span>
@@ -50,23 +42,24 @@ export function ChainSelector({ selectedChain, onSelectChain }: ChainSelectorPro
         className="border border-gray-700/30 bg-gray-800/20 backdrop-blur-lg shadow-xl w-full min-w-[180px]"
       >
         {chains.map((chain) => (
-          <DropdownMenuItem
-            key={chain.id}
-            className="flex items-center gap-2 cursor-pointer hover:bg-gray-700/40 hover:scale-[1.02] text-sm py-2 px-3 w-full transition-all duration-200"
-            onClick={() => handleChainSelect(chain.id)}
-          >
-            <Image
-              src={chain.logo}
-              alt={chain.name}
-              className="h-5 w-5"
-              style={{ objectFit: 'contain' }}
-              onError={(e) => {
-                // Fallback if image fails to load
-                (e.target as HTMLImageElement).src = '/cryptologos/ethereum.svg';
-              }}
-            />
-            <span>{chain.name}</span>
-          </DropdownMenuItem>
+          <Link href={`/${chain.id}`} key={chain.id} className="block">
+            <DropdownMenuItem
+              className="flex items-center gap-2 cursor-pointer hover:bg-gray-700/40 hover:scale-[1.02] text-sm py-2 px-3 w-full transition-all duration-200"
+              onClick={() => onSelectChain(chain.id)}
+            >
+              <Image
+                src={chain.logo}
+                alt={chain.name}
+                style={{ objectFit: 'contain' }}
+                width="10"
+                height="10"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = '/cryptologos/eth.svg';
+                }}
+              />
+              <span>{chain.name}</span>
+            </DropdownMenuItem>
+          </Link>
         ))}
       </DropdownMenuContent>
     </DropdownMenu>

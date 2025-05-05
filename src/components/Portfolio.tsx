@@ -1,21 +1,15 @@
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { ChainSelector } from '@/components/ChainSelector';
-import { AddressInput } from '@/components/AddressInput';
 import { PortfolioTable } from '@/components/PortfolioTable';
 import { truncateAddress } from '@/lib/utils';
 import { PortfolioTotals, WalletBalance } from '@/types/types';
-import { useAddressValidator, usePagination } from '@/hooks';
+import { useState } from 'react';
 
 interface PortfolioProps {
   address: string;
-  chainId: string;
-  tokens: WalletBalance[];
-  isLoading: boolean;
-  error: string;
-  totals: PortfolioTotals;
-  onAddressChange: (address: string) => void;
-  onChainChange: (chainId: string) => void;
+  chainId?: string;
+  tokens?: WalletBalance[];
+  isLoading?: boolean;
+  error?: string;
+  totals?: PortfolioTotals;
   onPageChange?: (page: number) => void;
   currentPage?: number;
   pageSize?: number;
@@ -24,25 +18,18 @@ interface PortfolioProps {
 
 export function Portfolio({
   address,
-  chainId,
-  tokens,
-  isLoading,
-  error,
-  totals,
-  onAddressChange,
-  onChainChange,
+  tokens = [],
+  isLoading = false,
+  error: externalError = '',
+  totals = { usdValue: 0, tokenCount: 0 },
   onPageChange,
   currentPage = 1,
   pageSize = 10,
   totalTokenCount
 }: PortfolioProps) {
-  const router = useRouter();
-  const [inputAddress, setInputAddress] = useState(address);
-  const [selectedChain, setSelectedChain] = useState(chainId);
-  const { validate, error: validationError } = useAddressValidator();
+  const [copied, setCopied] = useState(false);
 
-  // Create pagination metadata manually instead of using usePagination hook
-  // since we're now getting pre-paginated tokens from parent component
+  // Create pagination metadata manually
   const paginationMetadata = {
     total: totalTokenCount || tokens.length,
     page: currentPage,
@@ -50,58 +37,32 @@ export function Portfolio({
     pages: Math.ceil((totalTokenCount || tokens.length) / pageSize)
   };
 
-  // Handle address submission
-  const handleAddressSubmit = () => {
-    if (validate(inputAddress)) {
-      onAddressChange(inputAddress);
-    }
-  };
-
-  // Handle chain change
-  const handleChainChange = (newChain: string) => {
-    setSelectedChain(newChain);
-    onChainChange(newChain);
-  };
-
-  // Handle page change
-  const handlePageChange = (page: number) => {
-    if (onPageChange) {
-      onPageChange(page);
-    } else {
-      // Handle local pagination via URL if needed
-      if (page === 1) {
-        router.push(`/${chainId}/${address}`);
-      } else {
-        router.push(`/${chainId}/${address}/${page}`);
-      }
-    }
+  const handleCopyAddress = () => {
+    navigator.clipboard.writeText(address);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
     <div className="w-full">
-      <div className="flex flex-col space-y-4 sm:space-y-0 sm:flex-row sm:justify-between sm:items-center mb-8">
-        <h1 className="text-3xl font-bold">Portfolio Checker</h1>
-        <div className="flex items-center space-x-2">
-          <ChainSelector
-            selectedChain={selectedChain}
-            onSelectChain={handleChainChange}
-          />
-        </div>
-      </div>
-
-      <div className="mb-8">
-        <AddressInput
-          address={inputAddress}
-          onChange={setInputAddress}
-          isLoading={isLoading}
-          className="w-full"
-          onSubmit={handleAddressSubmit}
-          chainId={selectedChain}
-        />
-        {(error || validationError) && (
-          <p className="text-red-500 mt-2 text-sm">{error || validationError}</p>
-        )}
-      </div>
+      {externalError && <p className="text-red-500 mt-2 text-sm">{externalError}</p>}
+      {address && !isLoading && tokens.length > 0 && (
+        <h1 className="mt-4 text-3xl pb-8 text-muted-foreground text-left flex items-center gap-2">
+          {address.endsWith('.eth') ? address : truncateAddress(address, 10)}
+          <button
+            onClick={handleCopyAddress}
+            className="inline-flex items-center justify-center cursor-pointer"
+            aria-label="Copy address"
+          >
+            <img
+              src={copied ? "/copied.svg" : "/copy.svg"}
+              alt={copied ? "Copied address" : "Copy address"}
+              width={18}
+              height={18}
+            />
+          </button>
+        </h1>
+      )}
 
       <PortfolioTable
         tokens={tokens}
@@ -110,14 +71,9 @@ export function Portfolio({
         totalUsdValue={totals.usdValue}
         totalTokenCount={totalTokenCount}
         pagination={paginationMetadata}
-        onPageChange={handlePageChange}
+        onPageChange={onPageChange}
       />
 
-      {address && !isLoading && tokens.length > 0 && (
-        <div className="mt-4 text-sm text-muted-foreground text-right">
-          Viewing balances for {truncateAddress(address)}
-        </div>
-      )}
     </div>
   );
 }

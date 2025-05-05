@@ -113,7 +113,6 @@ export function PortfolioTable({
 
   return (
     <div className="space-y-4">
-      {/* User Summary Section */}
       <div className="rounded-md border border-gray-700/30 w-full p-6 backdrop-blur-lg bg-gray-800/20 shadow-xl">
         <div className="grid grid-cols-2 gap-4">
           <div>
@@ -176,9 +175,12 @@ export function PortfolioTable({
                         src={token.token.logoURI}
                         alt={token.token.symbol}
                         className="h-6 w-6 rounded-full shadow-sm"
+                        width="20"
+                        height="20"
                         onError={(e) => {
                           (e.target as HTMLImageElement).src = 'https://placehold.co/20x20?text=🪙';
                         }}
+                        unoptimized
                       />
                     ) : (
                       <div className="h-6 w-6 rounded-full bg-gradient-to-r from-primary/20 to-primary/40 flex items-center justify-center text-xs shadow-sm">
