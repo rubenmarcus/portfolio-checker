@@ -40,7 +40,7 @@ Create a `.env.local` file in the root directory with the following variables:
 ANKR_API_KEY=your_ankr_api_key_here
 ```
 
-You can obtain an API key by signing up at [Ankr](https://www.ankr.com/), which provides the blockchain infrastructure for this application.
+You can obtain an API key by signing up at [Ankr](https://www.ankr.com/rpc), which provides the blockchain infrastructure for this application.
 
 ### Running the Application
 
