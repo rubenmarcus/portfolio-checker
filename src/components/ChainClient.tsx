@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { chains } from '@/data/chains';
@@ -47,7 +48,7 @@ interface ChainClientProps {
   chainId: string;
 }
 
-export function ChainClient({ chainId }: ChainClientProps) {
+export const ChainClient: React.FC<ChainClientProps> = ({ chainId }) => {
   const router = useRouter();
   const [address, setAddress] = useState('');
   const [selectedChain, setSelectedChain] = useState(chainId);
@@ -103,75 +104,73 @@ export function ChainClient({ chainId }: ChainClientProps) {
 
   if (!isChainSupported) {
     return (
-
-        <div className="relative z-10 flex flex-col items-center p-4 sm:p-8 w-full h-full">
-          <div className="w-full max-w-4xl mx-auto">
-            <Card className="w-full rounded-md border border-gray-700/30 backdrop-blur-lg bg-gray-800/20 shadow-xl">
-              <CardHeader>
-                <CardTitle className="text-red-500">Unsupported Chain</CardTitle>
-                <CardDescription>
-                  The chain &quot;{chainId}&quot; is not supported. Please select one from the list above.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-2 mt-4">
-                  {chains.map(chain => (
-                    <Button
-                      key={chain.id}
-                      variant="blue"
-                      onClick={() => router.push(`/${chain.id}`)}
-                      className="flex items-center gap-2"
-                    >
-                      <img src={chain.logo} alt={chain.name} className="w-5 h-5" />
-                      {chain.name}
-                    </Button>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-    );
-  }
-
-  return (
-
       <div className="relative z-10 flex flex-col items-center p-4 sm:p-8 w-full h-full">
         <div className="w-full max-w-4xl mx-auto">
-          <Portfolio
-            address={address}
-            chainId={selectedChain}
-            tokens={allTokens}
-            isLoading={isLoading}
-            error={error}
-            totals={totals}
-            onAddressChange={handleAddressChange}
-            onChainChange={handleChainChange}
-          />
-
-          <Card className="w-full mt-8 rounded-md border border-gray-700/30 backdrop-blur-lg bg-gray-800/20 shadow-xl">
+          <Card className="w-full rounded-md border border-gray-700/30 backdrop-blur-lg bg-gray-800/20 shadow-xl">
             <CardHeader>
-              <CardTitle>Popular Accounts</CardTitle>
+              <CardTitle className="text-red-500">Unsupported Chain</CardTitle>
               <CardDescription>
-                Click on any of these accounts to view their balances on {chains.find(chain => chain.id === selectedChain)?.name || selectedChain}
+                The chain &quot;{chainId}&quot; is not supported. Please select one from the list above.
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="flex flex-wrap gap-2">
-                {topAccounts[selectedChain]?.map((account, index) => (
+              <div className="flex flex-wrap gap-2 mt-4">
+                {chains.map(chain => (
                   <Button
-                    key={index}
+                    key={chain.id}
                     variant="blue"
-                    onClick={() => handleSelectAccount(account.address)}
+                    onClick={() => router.push(`/${chain.id}`)}
                     className="flex items-center gap-2"
                   >
-                    {account.label}
+                    <img src={chain.logo} alt={chain.name} className="w-5 h-5" />
+                    {chain.name}
                   </Button>
-                )) || <p>No suggested accounts for this chain.</p>}
+                ))}
               </div>
             </CardContent>
           </Card>
         </div>
       </div>
+    );
+  }
+
+  return (
+    <div className="relative z-10 flex flex-col items-center p-4 sm:p-8 w-full h-full">
+      <div className="w-full max-w-4xl mx-auto">
+        <Portfolio
+          address={address}
+          chainId={selectedChain}
+          tokens={allTokens}
+          isLoading={isLoading}
+          error={error}
+          totals={totals}
+          onAddressChange={handleAddressChange}
+          onChainChange={handleChainChange}
+        />
+
+        <Card className="w-full mt-8 rounded-md border border-gray-700/30 backdrop-blur-lg bg-gray-800/20 shadow-xl">
+          <CardHeader>
+            <CardTitle>Popular Accounts</CardTitle>
+            <CardDescription>
+              Click on any of these accounts to view their balances on {chains.find(chain => chain.id === selectedChain)?.name || selectedChain}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-wrap gap-2">
+              {topAccounts[selectedChain]?.map((account, index) => (
+                <Button
+                  key={index}
+                  variant="blue"
+                  onClick={() => handleSelectAccount(account.address)}
+                  className="flex items-center gap-2"
+                >
+                  {account.label}
+                </Button>
+              )) || <p>No suggested accounts for this chain.</p>}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
   );
-}
+};
