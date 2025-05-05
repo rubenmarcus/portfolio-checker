@@ -1,8 +1,9 @@
 @import "tailwindcss";
 
+/* Force dark mode for all devices */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #0a0a0a;
+  --foreground: #ededed;
   --gradient-bg-start: rgb(4, 7, 15);
   --gradient-bg-end: rgb(35, 58, 87);
   --gradient-color-1: 45, 82, 115;
@@ -19,11 +20,9 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Apply dark mode at all times */
+html {
+  color-scheme: dark;
 }
 
 body {
@@ -44,4 +43,10 @@ body {
 .content {
   position: relative;
   z-index: 1;
+  color: var(--foreground);
+}
+
+/* Ensure all text is visible on dark backgrounds */
+h1, h2, h3, h4, h5, h6, p, span, div, button, a {
+  color: var(--foreground);
 }

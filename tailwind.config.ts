@@ -1,7 +1,8 @@
 import type { Config } from 'tailwindcss';
 
 const config: Config = {
-  darkMode: 'class',
+  // Force dark mode styling always
+  // darkMode: 'class',
   content: [
     './pages/**/*.{ts,tsx}',
     './components/**/*.{ts,tsx}',
@@ -10,6 +11,22 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      // Force dark colors
+      colors: {
+        // Make sure text is visible on dark backgrounds
+        white: '#ffffff',
+        gray: {
+          100: '#f3f4f6',
+          200: '#e5e7eb',
+          300: '#d1d5db',
+          400: '#9ca3af',
+          500: '#6b7280',
+          600: '#4b5563',
+          700: '#374151',
+          800: '#1f2937',
+          900: '#111827',
+        },
+      },
       animation: {
         first: 'moveVertical 30s ease infinite',
         second: 'moveInCircle 20s reverse infinite',

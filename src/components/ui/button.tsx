@@ -5,7 +5,7 @@ import * as React from 'react';
 import { cn } from '@/lib/utils';
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 cursor-pointer',
+  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 cursor-pointer text-white',
   {
     variants: {
       variant: {
@@ -14,11 +14,11 @@ const buttonVariants = cva(
         destructive:
           'bg-destructive text-white shadow-md shadow-destructive/20 hover:bg-destructive/90 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]',
         outline:
-          'border border-blue-700/40 bg-blue-900/30 backdrop-blur-sm text-blue-100 shadow-md hover:bg-blue-700/40 hover:text-white hover:border-blue-600/60 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]',
+          'border border-blue-700/40 bg-blue-900/30 backdrop-blur-sm text-white shadow-md hover:bg-blue-700/40 hover:text-white hover:border-blue-600/60 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]',
         secondary:
-          'bg-zinc-700 text-zinc-100 shadow-md hover:bg-zinc-600 hover:text-white hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]',
-        ghost: 'hover:bg-zinc-700/50 hover:text-zinc-100 active:scale-[0.98]',
-        link: 'text-blue-500 underline-offset-4 hover:underline hover:text-blue-400',
+          'bg-zinc-700 text-white shadow-md hover:bg-zinc-600 hover:text-white hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]',
+        ghost: 'hover:bg-zinc-700/50 text-white hover:text-white active:scale-[0.98]',
+        link: 'text-white underline-offset-4 hover:underline hover:text-white',
         blue: 'bg-blue-800/80 backdrop-blur-sm text-white shadow-md shadow-blue-900/30 hover:bg-blue-700/90 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]',
       },
       size: {
@@ -46,7 +46,8 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const Comp = asChild ? Slot : 'button';
     return (
       <Comp
-        className={cn(buttonVariants({ variant, size, className }))}
+        className={cn(buttonVariants({ variant, size, className }), "text-white")}
+        style={{ color: 'white' }}
         ref={ref}
         {...props}
       />
