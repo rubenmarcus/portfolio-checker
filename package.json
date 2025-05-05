@@ -1,5 +1,5 @@
 {
-  "name": "portfolio-tracker",
+  "name": "portfolio-checker",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "biome lint --write ./src",
     "check": "biome check",
-    "check:fix": "biome check --write",
+    "check:fix": "biome check --write"
   },
   "dependencies": {
     "@radix-ui/react-dropdown-menu": "^2.1.12",
