@@ -9,23 +9,8 @@ interface AddressValidatorResult {
 export function useAddressValidator(): AddressValidatorResult {
   const [error, setError] = useState('');
 
+
   const validate = useCallback((address: string): boolean => {
-    if (!address) {
-      return false;
-    }
-
-    const isValidAddress =
-      (address.startsWith('0x') && address.length === 42) ||
-      address.endsWith('.eth');
-
-    if (!isValidAddress) {
-      return false;
-    }
-
-    return true;
-  }, []);
-
-  const validateWithError = useCallback((address: string): boolean => {
     if (!address) {
       setError('');
       return false;

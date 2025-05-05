@@ -8,7 +8,7 @@ import { AddressInput } from './AddressInput';
 import { ChainSelector } from './ChainSelector';
 
 export const Header = () => {
-  const { validate } = useAddressValidator();
+  const { validate, error } = useAddressValidator();
   const [address, setAddress] = useState('');
   const [chainId, setChainId] = useState('ethereum');
   const pathname = usePathname();
@@ -54,6 +54,7 @@ export const Header = () => {
           className="w-full"
           chainId={chainId}
           validate={validate}
+          error={error}
         />
       </div>
     </header>

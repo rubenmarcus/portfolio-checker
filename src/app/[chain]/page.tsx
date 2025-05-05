@@ -1,4 +1,6 @@
 import { ChainClient } from '@/components/ChainClient';
+import { chains } from '@/data/chains';
+import { redirect } from 'next/navigation';
 
 interface ChainPageProps {
   params: {
@@ -10,5 +12,11 @@ export default async function ChainPage({ params }: ChainPageProps) {
   const { chain } = await params;
 
   const chainId = chain;
+  const isChainSupported = chains.some((chain) => chain.id === chainId);
+
+  if (!isChainSupported) {
+    redirect('/');
+  }
+
   return <ChainClient chainId={chainId} />;
 }

@@ -14,6 +14,7 @@ interface AddressInputProps {
   placeholder?: string;
   chainId?: string;
   validate: (address: string) => boolean;
+  error?: string;
 }
 
 export function AddressInput({
@@ -23,6 +24,7 @@ export function AddressInput({
   placeholder,
   chainId = 'ethereum',
   validate,
+  error,
 }: AddressInputProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -46,6 +48,11 @@ export function AddressInput({
     const symbol = CHAIN_SYMBOLS[chainId] || 'ETH';
     setCurrentChainSymbol(symbol);
   }, [chainId]);
+
+  // Clear address on route change
+  useEffect(() => {
+    onChange('');
+  }, [pathname, onChange]);
 
   // Validate address when it changes
   useEffect(() => {
@@ -90,14 +97,14 @@ export function AddressInput({
       className={isRootPage ? 'w-full flex flex-col items-center pb-10' : ''}
     >
       {isChainPage && (
-        <p className="mb-2 text-sm text-muted-foreground">
+        <p className="mb-2 text-sx text-muted-foreground">
           Please enter an address to view their balances on {chainName}
         </p>
       )}
       <div
         className={`flex items-center gap-2 ${isRootPage ? 'justify-center' : ''} ${className}`}
       >
-        <div className={`flex-grow ${isRootPage ? 'max-w-md' : 'max-w-xs'}`}>
+        <div className={`flex-grow ${isRootPage ? 'max-w-md' : 'max-w-xs'} relative`}>
           <Input
             value={address}
             onChange={handleChange}
@@ -110,14 +117,20 @@ export function AddressInput({
                 ? 'border-green-400'
                 : isFocused
                   ? 'border-blue-400'
-                  : ''
+                  : address && !isAddressValid
+                    ? 'border-red-400'
+                    : ''
             }`}
           />
+          {error && address && !isAddressValid && (
+            <p className="text-xs text-red-400 mt-1 absolute -bottom-5">{error}</p>
+          )}
         </div>
         <Button
           onClick={handleSubmit}
           className="bg-blue-800/80 backdrop-blur-sm text-white shadow-md shadow-blue-900/30 hover:bg-blue-700/90 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] rounded-md"
           type="button"
+          disabled={!!(address && !isAddressValid) || address === ''}
         >
           <span>Submit</span>
         </Button>
