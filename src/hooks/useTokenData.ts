@@ -26,7 +26,7 @@ export function useTokenData(
 
   useEffect(() => {
     async function fetchTokens() {
-      if (!chainId || !address) {
+      if (!(chainId && address)) {
         setIsLoading(false);
         return;
       }

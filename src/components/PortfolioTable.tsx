@@ -11,7 +11,7 @@ import {
 import { formatCryptoBalance, truncateAddress } from '@/lib/utils';
 import type { PaginationMetadata, WalletBalance } from '@/types/types';
 import Image from 'next/image';
-import React, { useState, useMemo } from 'react';
+import { useMemo, useState } from 'react';
 
 interface PortfolioTableProps {
   tokens: WalletBalance[];
@@ -219,9 +219,7 @@ export function PortfolioTable({
                         {token.token.symbol}
                       </span>
                     </TableCell>
-                    <TableCell>
-                      {formatCryptoBalance(token.balance)}
-                    </TableCell>
+                    <TableCell>{formatCryptoBalance(token.balance)}</TableCell>
                     <TableCell className="text-right">
                       {token.usdValue ? (
                         <span className="font-medium text-emerald-500 dark:text-emerald-400">

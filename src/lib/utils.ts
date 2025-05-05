@@ -33,11 +33,15 @@ export function formatCryptoBalance(balance: string | number): string {
 
   if (num >= 1_000_000_000) {
     const formatted = (num / 1_000_000_000).toFixed(2);
-    return formatted.endsWith('.00') ? `${Math.floor(num / 1_000_000_000)}B` : `${formatted}B`;
+    return formatted.endsWith('.00')
+      ? `${Math.floor(num / 1_000_000_000)}B`
+      : `${formatted}B`;
   }
   if (num >= 1_000_000) {
     const formatted = (num / 1_000_000).toFixed(2);
-    return formatted.endsWith('.00') ? `${Math.floor(num / 1_000_000)}M` : `${formatted}M`;
+    return formatted.endsWith('.00')
+      ? `${Math.floor(num / 1_000_000)}M`
+      : `${formatted}M`;
   }
   if (num >= 1000) {
     return formatNumberWithCommas(num.toFixed(2));

@@ -4,7 +4,6 @@ import { Portfolio } from '@/components/Portfolio';
 import { chains } from '@/data/chains';
 import { useTokenData } from '@/hooks';
 import { useParams, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
 
 export default function PagedPortfolioPage() {
   const params = useParams();

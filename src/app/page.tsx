@@ -55,7 +55,7 @@ export default function HomePage() {
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {topAccounts[selectedChain as keyof typeof topAccounts]?.map(
-            (account, index) => (
+            (account, _index) => (
               <Button
                 key={account.address}
                 variant="outline"
@@ -84,7 +84,7 @@ export default function HomePage() {
             </Button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {searchHistory.map((item, index) => (
+            {searchHistory.map((item, _index) => (
               <Button
                 key={item.address}
                 variant="outline"

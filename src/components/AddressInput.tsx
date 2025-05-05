@@ -52,7 +52,7 @@ export function AddressInput({
   // Clear address on route change
   useEffect(() => {
     onChange('');
-  }, [pathname, onChange]);
+  }, [onChange]);
 
   // Validate address when it changes
   useEffect(() => {
@@ -104,7 +104,9 @@ export function AddressInput({
       <div
         className={`flex items-center gap-2 ${isRootPage ? 'justify-center' : ''} ${className}`}
       >
-        <div className={`flex-grow ${isRootPage ? 'max-w-md' : 'max-w-xs'} relative`}>
+        <div
+          className={`flex-grow ${isRootPage ? 'max-w-md' : 'max-w-xs'} relative`}
+        >
           <Input
             value={address}
             onChange={handleChange}
@@ -123,7 +125,9 @@ export function AddressInput({
             }`}
           />
           {error && address && !isAddressValid && (
-            <p className="text-xs text-red-400 mt-1 absolute -bottom-5">{error}</p>
+            <p className="text-xs text-red-400 mt-1 absolute -bottom-5">
+              {error}
+            </p>
           )}
         </div>
         <Button

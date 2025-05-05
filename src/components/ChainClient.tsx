@@ -10,7 +10,6 @@ import {
 } from '@/components/ui/card';
 import { chains } from '@/data/chains';
 import { topAccounts } from '@/data/topAccounts';
-import Image from 'next/image';
 import Link from 'next/link';
 import type React from 'react';
 import { useEffect, useState } from 'react';
@@ -27,7 +26,6 @@ export const ChainClient: React.FC<ChainClientProps> = ({ chainId }) => {
     setSelectedChain(chainId);
   }, [chainId]);
 
-
   return (
     <div className="relative z-10 flex flex-col items-center  w-full h-full">
       <div className="w-full container mx-auto">
@@ -42,7 +40,7 @@ export const ChainClient: React.FC<ChainClientProps> = ({ chainId }) => {
           </CardHeader>
           <CardContent>
             <div className="flex flex-wrap gap-2">
-              {topAccounts[selectedChain]?.map((account, index) => (
+              {topAccounts[selectedChain]?.map((account, _index) => (
                 <Link
                   href={`/${selectedChain}/${account.address}`}
                   key={account.address}

@@ -9,7 +9,6 @@ interface AddressValidatorResult {
 export function useAddressValidator(): AddressValidatorResult {
   const [error, setError] = useState('');
 
-
   const validate = useCallback((address: string): boolean => {
     if (!address) {
       setError('');

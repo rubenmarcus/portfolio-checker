@@ -2,10 +2,8 @@ import { Suspense } from 'react';
 
 export default function ChainLayout({
   children,
-  params,
 }: {
   children: React.ReactNode;
-  params: { chain: string };
 }) {
   return (
     <div className="blockchain-portfolio">
