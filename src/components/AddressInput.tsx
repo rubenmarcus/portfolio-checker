@@ -125,9 +125,7 @@ export function AddressInput({
             }`}
           />
           {error && address && !isAddressValid && (
-            <p className="text-xs text-red-400 mt-1 absolute mt-2">
-              {error}
-            </p>
+            <p className="text-xs text-red-400 mt-1 absolute mt-2">{error}</p>
           )}
         </div>
         <Button

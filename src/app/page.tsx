@@ -86,7 +86,7 @@ export default function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {searchHistory.map((item, _index) => (
               <Button
-                key={item.address}
+                key={`${item.chain}-${item.address}-${_index}`}
                 variant="outline"
                 className="flex flex-col items-start p-4 h-auto text-left"
                 onClick={() => handleAddressSelect(item.chain, item.address)}
